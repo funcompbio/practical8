@@ -37,7 +37,7 @@ Please follow the next two steps:
    into a folder called "Downloads" or under a name corresponding to the
    translation of "Downloads" to the default language of your operating system.
 3. Make a directory in your filesystem, for instance at your _home_ directory,
-   called `practical 8` and copy in it the downloaded file.
+   called `practical8` and copy in it the downloaded file.
 4. Since the downloaded file is a ZIP file, uncompress as you did in
    [practical 1](/practical1/) so that you finally have a file called
    `catalunya_setmanal.csv` in the directory `practical8`.

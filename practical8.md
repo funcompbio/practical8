@@ -8,6 +8,7 @@ permalink: /practical8/
 
 The learning objectives for this practical are:
 
+  * How to create and use list objects.
   * How to perform implicit looping through lists.
   * Learn visualizing data in different ways.
 

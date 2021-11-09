@@ -20,7 +20,7 @@ The learning objectives for this practical are:
   * How to perform implicit looping through lists.
   * Add new columns to data frames.
   * How to merge data frames.
-  * Learn to visualize data in different ways.
+  * Learn to explore and visualize data in different ways.
 
 # Setup and background
 
@@ -30,9 +30,9 @@ and RStudio in your system. For a smooth development of this practical, it is
 strongly recommended that you follow and finish the previous
 [practical 7](/practical7/).
 
-We will download some COVID19 vaccination data, together with Catalunya population
-data to illustrate data wrangling in R and RStudio.
-Please follow the next two steps:
+We will download COVID19 vaccination and demographic data for Catalonia to
+illustrate some data wrangling in R and RStudio. Please follow the next two
+steps:
 
 * __COVID19 vaccination by municipality__:
 
@@ -48,19 +48,21 @@ Please follow the next two steps:
       translation of "Downloads" to the default language of your operating system.
    3. Make a directory in your filesystem, for instance at your _home_ directory,
       called `practical8` and copy in it the downloaded file.
-   4. Change the name of the file you just downloaded to `dosis_municipi.csv`, 
+   4. **Change the name of the file you just downloaded to `dosis_municipi.csv`**, 
       so that you finally have a file called `dosis_municipi.csv` in the 
       directory `practical8`.
       
 * __Population by municipality__:
 
-   1. Download the Catalan Urbanistic Map dataset at the [Dades Obertes de Catalunya](https://governobert.gencat.cat/ca/dades_obertes)
-      data portal. You should follow the following [link](https://analisi.transparenciacatalunya.cat/en/Urbanisme-infraestructures/Dades-del-mapa-urban-stic-de-Catalunya/epsm-zskb) 
-      and donwload the data by going to the top right corner and select "Export" 
-      and then "CSV". This dataset includes information of the population of Catalunya
+   1. Download the Catalan Urbanistic Map dataset at the
+      [Dades Obertes de Catalunya](https://governobert.gencat.cat/ca/dades_obertes)
+      data portal. You should follow the following
+      [link](https://analisi.transparenciacatalunya.cat/en/Urbanisme-infraestructures/Dades-del-mapa-urban-stic-de-Catalunya/epsm-zskb) 
+      and donwload the data by going to the top right corner and select "Export"
+      and then "CSV". This dataset includes information of the population of Catalonia
       by municipality.
-   2. Copy the donwloaded file to the `practical8` directory and change its name
-      to `poblacio_municipis.csv`.
+   2. Copy the donwloaded file to the `practical8` directory and
+      **change its name to `poblacio_municipis.csv`**.
 
 If you are using the UPF [myapps](https://myapps.upf.edu) cloud to run RStudio,
 then you need to either use an internet browser in _myapps_ to download the data
@@ -73,72 +75,80 @@ download.file("https://analisi.transparenciacatalunya.cat/api/views/irki-p3c7/ro
 download.file("https://analisi.transparenciacatalunya.cat/api/views/epsm-zskb/rows.csv?accessType=DOWNLOAD&sorting=true", "poblacio_municipis.csv")
 ```
 
+# Reading and filtering data
+
+Let's load the CSV file `poblacio_municipis.csv`, which contains some demographic indicators
+for the 948 municipalities in Catalonia such as the population (column `Poblacio_padro`).
+
+```{r}
+pop <- read.csv("poblacio_municipis.csv")
+dim(pop)
+head(pop, n=3)
+table(pop$Any)
+```
+
+We can observe that this dataset contains data from different years. To continue with our
+analysis, we will select the most recent data corresponding to 2020 and, moreover, we will
+only keep the columns `Codi_ine_5_txt` (identifier for the municipality), `NomMun`, `Comarca`, 
+`Poblacio_padro` and `Superficie_ha`.
+
+```{r}
+## build a logical mask to select for year 2020
+mask <- pop$Any == 2020
+## build a character string vector of the selected columns
+selcols <- c("Codi_ine_5_txt", "NomMun", "Comarca", "Poblacio_padro", "Superficie_ha")
+## subset the data.frame object 'pop' for rows in 'mask' and columns in 'selcols'
+pop_sel <- pop[mask, selcols]
+dim(pop_sel)
+head(pop_sel)
+```
 
 # Lists and implicit looping
 
-We first load the vaccination dataset `dosis_municipi.csv` by using the function 
-`read.csv()`. This data set contains information on the administered
-doses of the different COVID19, by sex and municipality.
+Lists allow one to group values through their elements. Let’s say we want to
+group the population number by county. We can do that using the function `split()`
+to which we should give a first argument of the values we want to group and a
+second argument with the grouping factor.
 
 ```{r}
-vac <- read.csv("dosis_municipi.csv", sep=";", stringsAsFactors=FALSE)
-head(vac)
-
-table(vac$FABRICANT)
+pbyc <- split(pop_sel$Poblacio_padro, pop_sel$Comarca)
+class(pbyc)
+length(pbyc)
+names(pbyc)
+head(pbyc)
 ```
 
-Next, we remove the rows that correspond to non-administered vaccines and 
-save it in a data frame called `vac_admin`.
-
-```{r}
-vac_admin <- vac[vac$FABRICANT!="No administrada",]
-```
-
-Lists allow grouping values through their elements. Let's say we want
-to group the number of administered doses in the previous data, by the vaccine
-manufacturer. We can do that using the function `split()` to which we should 
-give a first argument of the values we want to group and a second argument with 
-the grouping factor.
-
-```{r}
-dosesbymanufacturer <- split(vac_admin$RECOMPTE, vac_admin$FABRICANT)
-class(dosesbymanufacturer)
-length(dosesbymanufacturer)
-names(dosesbymanufacturer)
-head(dosesbymanufacturer, n=3)
-```
-
-Grouping values can be useful in data analysis when we want to examine the
-data separately by groups. Let's say we want to visualize the distribution
-of administered doses for Pfizer and Moderna, next to each other. We can 
-use the function `hist()` for that purpose, creating a grid of two 
+Grouping values can be useful in data analysis when we want to examine the data
+separately by groups. Let’s say we want to visualize the distribution of the
+population for the two counties `Terra Alta` and `Urgell`, next to each
+other. We can use the function `hist()` for that purpose, creating a grid of two
 plotting panes using the `par()` function, as follows:
 
-```{r dosesPfizerModerna}
+```{r comptaltaurgell, echo=TRUE}
 par(mfrow=c(1, 2))
-hist(dosesbymanufacturer$`BioNTech / Pfizer`, xlab="Administred Doses", main="Pfizer")
-hist(dosesbymanufacturer$`Moderna / Lonza`, xlab="Administred Doses", main="Moderna")
+hist(pbyc[["Terra Alta"]], xlab="Population (inhabitants)", main="Terra Alta")
+hist(pbyc$Urgell, xlab="Population (inhabitants)", main="Urgell")
 ```
+Note that in the previous code we are using the double-bracket operator `[[`
+instead of the dollar `$` to access the element `Terra Alta` because this element
+has an space character in its name. Try to interpret the previous plots, how many
+municipalities in _Urgell_ and _Terra Alta_ have less than 5,000 inhabitants?
 
-Note that as the name of the list elements contain spaces and the character `/` we need
-to add back quote to delimit the name. We could also use double square brackets (`[[]]`)
-to access a specific element in the list, for example `dosesbymanufacturer[["BioNTech / Pfizer"]]`.
-
-Now, let's calculate the mean administered doses of Moderna vaccines.
-Having built the previous `list` object, we can make that calculation applying
-the function `mean()` to the corresponding element of the list:
+Now, let's calculate the mean municipality population for the county of _Terra Alta_.
+Having built the previous list object, we can make that calculation applying the
+function `mean()` to the corresponding element of the list:
 
 ```{r}
-mean(dosesbymanufacturer$`Moderna / Lonza`)
+mean(pbyc[["Terra Alta"]])
 ```
-Let's say we want to compare this value with the mean value for the Pfizer
-vaccines:
+
+Now, let's compare it with the mean municipality population for _Urgell_:
 
 ```{r}
-mean(dosesbymanufacturer$`BioNTech / Pfizer`)
+mean(pbyc$Urgell)
 ```
 
-It would be tedious to do that calculation for each different manufacturer by
+It would be tedious to do that calculation for each different county by
 writing one such function call for each element of the list. As an alternative,
 we could use a `while` or `for` loop that would iterate over the elements of
 the list. However, R provides a more compact way to iterating over lists,
@@ -154,225 +164,147 @@ by the result given by the function on each corresponding element, while the
 function `sapply()` attempts to simplify the resulting data structure in that if
 each element of the resulting list has length 1, then it return an atomic vector.
 
-We can calculate the mean of the risk of outbreak per month with the following
+We can calculate the mean municipality population per county with the following
 call to the `sapply()` function:
 
 ```{r}
-sapply(dosesbymanufacturer, mean, na.rm=TRUE)
-```
-where here the argument `na.rm=TRUE` is passed by `sapply()` to each call to
-the `mean()` function. This argument excludes `NA` (missing) values and do the
-calculation with the non-missing ones. Try the same call using the `lapply()` function 
-and notice the difference in the output.
-
-**Exercise:** Calculate the total (sum) doses administered for each manufacturer and
-plot it as a bar plot. (**Hint**: Check the `barplot()` function help for the arguments 
-`horiz` and `las`, combined with the argument `mar` for the function `par()` to be
-able to fit the axis text in the plot). 
-
-```{r barplotDoses, echo=FALSE}
-total_doses <- sapply(dosesbymanufacturer, sum, na.rm=TRUE)
-
-par(mar=c(5,10,4,2))
-barplot(total_doses, horiz = TRUE, las=1,
-        xlab = "Dosis Administtrades")
+sapply(pbyc, mean)
 ```
 
-**Exercise:**
+**Exercise:** calculate the total population per county and the total population
+in Catalonia.
 
-Plot the distribution of the number of __administered Pfizer vaccines in 
-Barcelona (municipality) per month__, using box plots (**hint**: Check the materials
-In [practical 7](https://funcompbio.github.io/practical7/) to remember how to 
-extract months from dates and convert them to ordered factors).
+# Sorting and ordering
 
-Calculate the __mean__ of the number of administered Pfizer doses per month in 
-Barcelona and plot it over the previous box plots using the function `points()`.
-Check the help page of `points()` to find out how to use it and figure out how 
-make the plotted point to be a red solid diamond (**hint:** look at the argument `pch`).
+We have two functions in R that allow us to rearrange values in particular order:
 
-Your plot should look like the one below:
+* `sort()` returns the ordered values.
+* `order()` returns a permutation which rearranges its first argument into
+  ascending or descending order.
 
-```{r pfizerBCNperMonth, echo = FALSE}
-vac_bcn_pfi <- vac_admin[vac_admin$MUNICIPI == "BARCELONA" & vac_admin$FABRICANT == "BioNTech / Pfizer",]
+By default, these functions return an ascending order, but by setting the argument
+`decreasing=TRUE`, we can obtain a descending order.
 
-## Select month info
-m <- months(as.Date(vac_bcn_pfi$DATA), abbreviate = TRUE)
-mf <- factor(m, levels=c("Jan", "Feb", "Mar", "Apr", "May", "Jun",
-                         "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"))
+**Exercise:** Using the previous functions `sort()` and `order()` and the
+columns `NomMun` (municipality name) and `Poblacio_padro` (municipality
+population), find out how many inhabitants have the three most and three least
+populated municipalities and their names.
 
+# Adding new columns
 
-vac_bcn_mf <- split(vac_bcn_pfi$RECOMPTE, mf)
-mean <- sapply(vac_bcn_mf, mean)
-
-boxplot(vac_bcn_pfi$RECOMPTE ~ mf,
-        xlab = "Month", ylab="Administered Vaccines",
-        main = "Administered Pfizer Vaccines in Barcelona")
-points(mean, pch=18, col="red", cex=2)
-```
-
-# Data wrangling
-
-## Sorting and ordering
-
-Next, we load the csv `poblacio_municipis.csv`, which contains the population Catalunya's
-municipalities (column `Poblacio_padro`), together with other population indicators.
+In some cases we might be interested in deriving new data columns from the
+existing ones. For instance, let's say we want to add a new column to the
+previous `data.frame` object `pop_sel` that stores the population density of
+each municipality in inhabitants per
+[squared kilometer (Km2)](https://en.wikipedia.org/wiki/Square_kilometre). The
+column `Superficie_ha` contains the area occupied by the municipality in
+[hectares](https://en.wikipedia.org/wiki/Hectare) (ha), let's convert it first to Km2:
 
 ```{r}
-pop <- read.csv("poblacio_municipis.csv")
-head(pop)
-table(pop$Any)
+km2 <- pop_sel$Superficie_ha / 100
 ```
 
-We can observe that this dataset contains data from different years. To continue with our
-analysis, we will select the latest information, corresponding to 2020, and we will only
-keep the columns `Codi_ine_5_txt` (identifier for the municipality), `NomMun`, `Comarca`, 
-`Poblacio_padro` and `Superficie_ha`.
+Finally, let's calculate the population density dividing the number of
+inhabitants by the area occupied by the municipality in Km2 and add it
+to `pop_sel` as a new column called `density`:
 
 ```{r}
-pop_sel <- pop[pop$Any==2020, c("Codi_ine_5_txt", "NomMun", "Comarca", "Poblacio_padro", "Superficie_ha")]
+pop_sel$Density <- pop_sel$Poblacio_padro / km2
 head(pop_sel)
 ```
 
-We have two functions in R that allow ordering values: 
+# Combining data
 
-* `sort()` returns the ordered values.
-* `order()` returns the position that element would have in an ordered vector.
-
-We can provide the argument `decreasing` to both functions, which will be `TRUE`
-or `FALSE` depending on if we want the values ordered from higher to lower values
-or the opposite.
-
-We can use the function `sort()` to order area in hectares (Ha) from higher to 
-lower:
+One of the most common operations required to answer a question with data
+is to combine two datasets in some way. Let's say we want to compare
+municipalities in terms of how many vaccine does per 100,000 inhabitants
+have been administered. For that purpose, we load a second dataset
+corresponding to the administered COVID19 vaccine doses by municipality
+in Catalonia (`dosis_municipi.csv`) as follows.
 
 ```{r}
-area_ha <- sort(pop_sel$Superficie_ha, decreasing = TRUE)
-head(area_ha)
-tail(area_ha)
+vac <- read.csv("dosis_municipi.csv", sep=";", stringsAsFactors=FALSE)
+dim(vac)
+head(vac)
 ```
-
-However, if we want to order the entire data frame we should take advantage of the
-`order()` function. The output of this function is vector of the positions each 
-element in our vector would have if it was ordered. As it is a vector of 
-positions, we can use it to arrange the rows of our data frame in that specific 
-order:
+The column `FABRICANT` contains the vaccine manufacturer. Let's tally the
+number of administered doses per manufacturer.
 
 ```{r}
-order_ha <- order(pop_sel$Superficie_ha, decreasing = TRUE)
-head(order_ha)
-tail(order_ha)
-
-pop_sel_ha <- pop_sel[order_ha, ]
-head(pop_sel_ha)
-tail(pop_sel_ha)
+table(vac$FABRICANT)
 ```
-
-**Exercise:** Order the data frame `pop_sel` according to the population of each municipality. Which are the most and less populated municipalities?
-
-## Adding new columns
-
-In some cases we might be interested in performing some operations using specific
-columns of the data frame. For example, if we want to calculate the population 
-density per km^2 using this, we can do as follows:
+The value `No administrada` corresponds to non-administered vaccine doses.
+Let's discard those and work with the corresponding subset of the data in
+a `data.frame` object called `vac_admin`.
 
 ```{r}
-pop_sel$density <- pop_sel$Poblacio_padro /pop_sel$Superficie_ha * 100
+mask <- vac$FABRICANT !="No administrada"
+vac_admin <- vac[mask, ]
+dim(vac_admin)
 ```
-
-Where we divide the population by the area in hectares and multiply by 100 to
-convert to km^2.
-
-## Joining data frames
-
-Now, we want to combine the data we have generated here on the population of each 
-municipality to the vaccination data we had in the section above. 
+We want to combine the filtered vaccination data with the population data.
 
 ```{r}
 dim(vac_admin)
 colnames(vac_admin)
 
 dim(pop_sel)
-colnames(vac_admin)
+colnames(pop_sel)
 ```
 
-Both datasets have different dimensions and different column names, so we need join 
-them using a common column in both datasets. As both data frames are segregated by
-municipality, we might think of using this variable to merge the data:
+Note that both datasets have different dimensions and different column names,
+so we need combine them using some column that is common in both datasets.
+Because our purpose is to compare vaccination rates among municipalities, we
+should expect that the name of the municipality could be use to combine both
+datasets.
 
 ```{r}
 head(vac_admin$MUNICIPI)
 head(pop_sel$NomMun)
-
-matches <- match(vac_admin$MUNICIPI, pop_sel$NomMun)
-head(matches, n=20)
 ```
+However, in the first dataset the name of the municipalities is all in
+uppercase, while in the second is a combination of upper and lower cases. As R
+compares characters in a case-sensitive manner, we won't be able to use directly
+these values to combine the data frames as we can see from the following attempt
+to match names.
 
-However, in the first dataset the name of the municipalities is all in uppercase,
-while in the second is a combination of upper and lower cases. As R compares characters
-in a case-sensitive manner, we won't be able to use this values to join the data frames.
-
-Both datasets also have a column with a municipality code:
+```{r}
+mt <- match(vac_admin$MUNICIPI, pop_sel$NomMun)
+head(mt, n=20)
+```
+However, both datasets also have a column with a municipality code:
 
 ```{r}
 head(vac_admin$MUNICIPI_CODI)
 head(pop_sel$Codi_ine_5_txt)
 
-matches <- match(vac_admin$MUNICIPI_CODI, pop_sel$Codi_ine_5_txt)
-head(matches, n=20)
+mt <- match(vac_admin$MUNICIPI_CODI, pop_sel$Codi_ine_5_txt)
+head(mt, n=20)
 ```
-
-To obtain a data frame that combines both datasets, we will need to paste
-them, but making sure that the rows in the second data frame are matched
-to those in the first one. To do this, we use the function `cbind()` and
-select the rows of `pop_sel` that match `vac_admin`.
+Once we know what column in each dataset can be used to combine them,
+we can use the `merge()` function, which by default will return only rows with
+common values in those two columns. By default, this function will combine data
+using columns with identical names. Since in our datasets the two columns with
+the common information are named differently, we need to specify which are these
+columns in each `data.frame` object by using the arguments `by.x` and `by.y`.
 
 ```{r}
-vac_pop_match <- cbind(vac_admin,
-                       pop_sel[matches,])
-dim(vac_pop_match)
-head(vac_pop_match)
-```
-The combined data frame `vac_pop_match` has the same number of rows
-than the original `vac_admin`, but now includes the new columns
-from `pop_sel`, matched by the municipality code.
-
-When merging data frames with this methods, if some rows in the first
-dataset do not match any row in the second dataset, it returns `NA`.
-In the case of `vac_pop_match`, we see that there are a few rows that
-did not find a match.
-
-```{r}
-table(is.na(vac_pop_match$Poblacio_padro))
-```
-
-We thus might be interested in only keeping rows that represent information
-present in both datasets. In this case, we can combine the datasets using
-the `merge()` function, which will directly return a joined data frame. By 
-default, this function will combine data using columns that are named the 
-same. Since in our datasets the columns are named differently, we need to 
-specify which columns to use for performing the merge using the arguments 
-`by.x` and `by.y`. Additionally, since we want to return only the rows that
-are present in both datasets (_natural join_), we use the argument `all = FALSE`.
-
-```{r}
-## Merge
 vac_pop_merge <- merge(vac_admin, pop_sel, 
-                       by.x = "MUNICIPI_CODI", by.y = "Codi_ine_5_txt",
-                       all = FALSE)
+                       by.x = "MUNICIPI_CODI", by.y = "Codi_ine_5_txt")
 dim(vac_pop_merge)
 head(vac_pop_merge)
 ```
 
 Now the number of rows of the output data frame `vac_pop_merge` is slightly
-smaller than `vac_admin`, as it is not keeping those rows that didn't find
+smaller than `vac_admin`, because it doesn't keep rows that didn't find
 a match in `pop_sel`.
 
 **Exercise:** Using `vac_pop_merge`, add a new column named `doses_100K_h` 
-containing how many doses were administered each day per 1000,000 inhabitants. 
+containing how many doses were administered each day per 100,000 inhabitants. 
+The column `RECOMPTE` contains the number of administered doses.
 Which municipality administered the most and the least doses and at which date?
 
 ```{r, include=FALSE}
-## Create columns
 vac_pop_merge$doses_100K_h <- vac_pop_merge$RECOMPTE / vac_pop_merge$Poblacio_padro * 100000
 vac_pop_merge[order(vac_pop_merge$doses_100K_h, decreasing = TRUE),]
 ```

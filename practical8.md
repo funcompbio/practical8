@@ -364,13 +364,24 @@ to `pop_sel` as a new column called `density`:
     6        962.70 1028.773242
 
 Let’s say we want to visualize the relationship between population
-density and absolute population. We can do that using a scatter plot as
-follows.
+density and absolute population, highlighting the two municipalities
+with highest population and density. We can do that using the functions
+`plot()` and `text()` as follows.
 
     > plot(pop_sel$Poblacio_padro, pop_sel$Density, xlab="Population (inhabitants)",
     +      ylab="Population density")
+    > whmaxpop <- which.max(pop_sel$Poblacio_padro)
+    > whmaxden <- which.max(pop_sel$Density)
+    > text(pop_sel$Poblacio_padro[whmaxpop], pop_sel$Density[whmaxpop],
+    +      pop_sel$NomMun[whmaxpop], pos=2)
+    > text(pop_sel$Poblacio_padro[whmaxden], pop_sel$Density[whmaxden],
+    +      pop_sel$NomMun[whmaxden], pos=1)
 
 ![](popabsvsden-1.png)
+
+Note that in the previous code we have used the function `which.max()`
+to obtain the position in the input vector that contains the maximum
+value.
 
 # Combining data
 

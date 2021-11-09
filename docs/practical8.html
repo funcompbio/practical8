@@ -3,6 +3,7 @@
 <ul>
 <li>How to create and use list objects.</li>
 <li>How to perform implicit looping through lists.</li>
+<li>Add new columns to data frames.</li>
 <li>How to merge data frames.</li>
 <li>Learn to visualize data in different ways.</li>
 </ul>
@@ -25,7 +26,7 @@
 </ul>
 <p>If you are using the UPF <a href="https://myapps.upf.edu">myapps</a> cloud to run RStudio, then you need to either use an internet browser in <em>myapps</em> to download the data file directly in the <em>myapps</em> cloud or upload to the <em>myapps</em> cloud the file that you have downloaded in your own computer.</p>
 <h1 id="lists-and-implicit-looping">Lists and implicit looping</h1>
-<p>We first load the vaccination dataset <code>dosis_municipi.csv</code> by using the function <code>read.csv()</code>. As you can see, this data set contains inormation on the administered doses of the different COVID19, by sex and municipality.</p>
+<p>We first load the vaccination dataset <code>dosis_municipi.csv</code> by using the function <code>read.csv()</code>. This data set contains information on the administered doses of the different COVID19, by sex and municipality.</p>
 <pre><code>&gt; vac &lt;- read.csv(&quot;dosis_municipi.csv&quot;, sep=&quot;;&quot;, stringsAsFactors=FALSE)
 &gt; head(vac)
 
@@ -60,7 +61,7 @@
                59915               119540 </code></pre>
 <p>Next, we remove the rows that correspond to non-administered vaccines and save it in a data frame called <code>vac_admin</code>.</p>
 <pre><code>&gt; vac_admin &lt;- vac[vac$FABRICANT!=&quot;No administrada&quot;,]</code></pre>
-<p>Lists allow one to group values through their elements. Let’s say we want to group the number of administered doses in the previous data, by the type (or manufacturer) of the vaccine. We can do that using the function <code>split()</code> to which we should give a first argument of the values we want to group and a second argument with the grouping factor.</p>
+<p>Lists allow grouping values through their elements. Let’s say we want to group the number of administered doses in the previous data, by the vaccine manufacturer. We can do that using the function <code>split()</code> to which we should give a first argument of the values we want to group and a second argument with the grouping factor.</p>
 <pre><code>&gt; dosesbymanufacturer &lt;- split(vac_admin$RECOMPTE, vac_admin$FABRICANT)
 &gt; class(dosesbymanufacturer)
 
@@ -20537,8 +20538,8 @@ $`Moderna / Lonza`
 &gt; hist(dosesbymanufacturer$`BioNTech / Pfizer`, xlab=&quot;Administred Doses&quot;, main=&quot;Pfizer&quot;)
 &gt; hist(dosesbymanufacturer$`Moderna / Lonza`, xlab=&quot;Administred Doses&quot;, main=&quot;Moderna&quot;)</code></pre>
 <p><img src="dosesPfizerModerna-1.png" /></p>
-<p>Note that as the name of the list elements contain spaces and the character <code>/</code> we need to add backquote to delimit the name. We could also use double square brackets (<code>[[]]</code>) to access a specific element in the list, for example <code>dosesbymanufacturer[["BioNTech / Pfizer"]]</code>.</p>
-<p>Now, let’s calculate the mean doses administered of Moderna vaccines. Having built the previous <code>list</code> object, we can make that calculation applying the function <code>mean()</code> to the corresponding element of the list:</p>
+<p>Note that as the name of the list elements contain spaces and the character <code>/</code> we need to add back quote to delimit the name. We could also use double square brackets (<code>[[]]</code>) to access a specific element in the list, for example <code>dosesbymanufacturer[["BioNTech / Pfizer"]]</code>.</p>
+<p>Now, let’s calculate the mean administered doses of Moderna vaccines. Having built the previous <code>list</code> object, we can make that calculation applying the function <code>mean()</code> to the corresponding element of the list:</p>
 <pre><code>&gt; mean(dosesbymanufacturer$`Moderna / Lonza`)
 
 [1] 8.305852</code></pre>
@@ -20564,6 +20565,7 @@ Oxford / AstraZeneca
 <p>Your plot should look like the one below:</p>
 <p><img src="pfizerBCNperMonth-1.png" /></p>
 <h1 id="data-wrangling">Data wrangling</h1>
+<h2 id="sorting-and-ordering">Sorting and ordering</h2>
 <p>Next, we load the csv <code>poblacio_municipis.csv</code>, which contains the population Catalunya’s municipalities (column <code>Poblacio_padro</code>), together with other population indicators.</p>
 <pre><code>&gt; pop &lt;- read.csv(&quot;poblacio_municipis.csv&quot;)
 &gt; head(pop)
@@ -20688,8 +20690,8 @@ Oxford / AstraZeneca
 <li><code>sort()</code> returns the ordered values.</li>
 <li><code>order()</code> returns the position that element would have in an ordered vector.</li>
 </ul>
-<p>We can provide the argument <code>decreasing</code> to both functions, which will be <code>TRUE</code> or <code>FALSE</code> depending on if we want the values ordered from higher to lower values.</p>
-<p>We can use the function sort to order area in hectares (Ha) from higher to lower:</p>
+<p>We can provide the argument <code>decreasing</code> to both functions, which will be <code>TRUE</code> or <code>FALSE</code> depending on if we want the values ordered from higher to lower values or the opposite.</p>
+<p>We can use the function <code>sort()</code> to order area in hectares (Ha) from higher to lower:</p>
 <pre><code>&gt; area_ha &lt;- sort(pop_sel$Superficie_ha, decreasing = TRUE)
 &gt; head(area_ha)
 
@@ -20698,7 +20700,7 @@ Oxford / AstraZeneca
 &gt; tail(area_ha)
 
 [1] 115.71  93.15  91.84  83.21  72.59  62.39</code></pre>
-<p>However, if we want to order the entire data frame we should take advantage of the <code>order()</code> function. The output of this function is vector of the positions each element in our vector would have if it was ordered. As it is a vector of positions, we can use it to arrange the rows of our data.frame in that specific order:</p>
+<p>However, if we want to order the entire data frame we should take advantage of the <code>order()</code> function. The output of this function is vector of the positions each element in our vector would have if it was ordered. As it is a vector of positions, we can use it to arrange the rows of our data frame in that specific order:</p>
 <pre><code>&gt; order_ha &lt;- order(pop_sel$Superficie_ha, decreasing = TRUE)
 &gt; head(order_ha)
 
@@ -20735,10 +20737,12 @@ Oxford / AstraZeneca
 486         72.59
 51          62.39
 859            NA</code></pre>
-<p><strong>Exercise:</strong> Order the data frame <code>pop_sel</code> according to the population of each municipality. Which one is the most and less populated municipality?</p>
-<p>In some cases we might be interested to perform some operations using specific columns of the data frame. For example, if we want to calculate the population density per km^2 using the dataset above, we can do as follows:</p>
+<p><strong>Exercise:</strong> Order the data frame <code>pop_sel</code> according to the population of each municipality. Which are the most and less populated municipalities?</p>
+<h2 id="adding-new-columns">Adding new columns</h2>
+<p>In some cases we might be interested in performing some operations using specific columns of the data frame. For example, if we want to calculate the population density per km^2 using this, we can do as follows:</p>
 <pre><code>&gt; pop_sel$density &lt;- pop_sel$Poblacio_padro /pop_sel$Superficie_ha * 100</code></pre>
 <p>Where we divide the population by the area in hectares and multiply by 100 to convert to km^2.</p>
+<h2 id="joining-data-frames">Joining data frames</h2>
 <p>Now, we want to combine the data we have generated here on the population of each municipality to the vaccination data we had in the section above.</p>
 <pre><code>&gt; dim(vac_admin)
 
@@ -20884,3 +20888,22 @@ Oxford / AstraZeneca
 6       1994.69 628.5689</code></pre>
 <p>Now the number of rows of the output data frame <code>vac_pop_merge</code> is slightly smaller than <code>vac_admin</code>, as it is not keeping those rows that didn’t find a match in <code>pop_sel</code>.</p>
 <p><strong>Exercise:</strong> Using <code>vac_pop_merge</code>, add a new column named <code>doses_100K_h</code> containing how many doses were administered each day per 1000,000 inhabitants. Which municipality administered the most and the least doses and at which date?</p>
+<p>To continue with our analysis, we need to add a column containing a month as a factor. Thus, we repeat the steps explained in the previous <a href="/practical7/">practical 7</a> to convert the column <code>DATA</code> to a date, extract the months and convert them to a factor with ordered levels:</p>
+<pre><code>&gt; vac_pop_merge$month &lt;- months(as.Date(vac_pop_merge$DATA), abbreviate=TRUE)
+&gt; vac_pop_merge$month &lt;- factor(vac_pop_merge$month, levels=c(&quot;Jan&quot;, &quot;Feb&quot;, &quot;Mar&quot;, &quot;Apr&quot;, &quot;May&quot;, &quot;Jun&quot;,
++                          &quot;Jul&quot;, &quot;Aug&quot;, &quot;Sep&quot;, &quot;Oct&quot;, &quot;Nov&quot;, &quot;Dec&quot;))</code></pre>
+<p>Next, we will select the municipalities with high population (more than 200,000 residents) and save them into a data frame called <code>vac_high</code>. Now we want to obtain the total doses administered per inhabitant every month in this specific municipalities. Again, we take advantege of the combination of <code>split</code> and <code>sapply</code> to do this calculation. Finally, we create a new data frame with the summarised data, including a column called <code>muni_type</code> that identifies the type of municipalities (“High” as in “High population”) used for extracting this values.</p>
+<pre><code>&gt; vac_high &lt;- vac_pop_merge[vac_pop_merge$Poblacio_padro &gt; 200000,]
+&gt; dosesh_high &lt;- split(vac_high$doses_100K_h, vac_high$month)
+&gt; 
+&gt; total_dosesh_high &lt;- sapply(dosesh_high, sum)
+&gt; 
+&gt; df_high &lt;- data.frame(&quot;month&quot;=names(total_dosesh_high),
++                       &quot;doses_h&quot;=total_dosesh_high,
++                       &quot;muni_type&quot;=&quot;High&quot;)
+&gt; 
+&gt; barplot(df_high$doses_h, names.arg = df_high$month,
++         main=&quot;Highly populated municipalities&quot;)</code></pre>
+<p><img src="barplotDosesHighPop-1.png" /></p>
+<p><strong>Exercise</strong>: Create a data frame named <code>df_low</code> that contains the total doses per 100,000 inhabitants administered per month in municipalities with population smaller than 1,000 inhabitants. Make a bar plot showing the administered doses per inhabitant per month, as we did above.</p>
+<p><strong>Exercise</strong>: Combine the data frames <code>df_high</code> and <code>df_low</code> into a single data frame named <code>df_months</code> (<strong>Hint</strong>: Make sure that <code>df_high</code> and <code>df_low</code> have the same columns, with the same name and in the same order). Then make a box plot showing the distribution of doses per inhabitant grouped by the type of municipality (low or high). Do you see any difference?</p>

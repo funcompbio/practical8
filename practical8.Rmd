@@ -66,7 +66,7 @@ then you need to either use an internet browser in _myapps_ to download the data
 file directly in the _myapps_ cloud or upload to the _myapps_ cloud the file
 that you have downloaded in your own computer.
 
-```{r, include=FALSE}
+```{r, include=FALSE, eval=FALSE}
 ## Download required files
 download.file("https://analisi.transparenciacatalunya.cat/api/views/irki-p3c7/rows.csv?accessType=DOWNLOAD&bom=true&format=true&delimiter=%3B&sorting=true", destfile="dosis_municipi.csv")
 download.file("https://analisi.transparenciacatalunya.cat/api/views/epsm-zskb/rows.csv?accessType=DOWNLOAD&sorting=true", "poblacio_municipis.csv")
@@ -91,15 +91,6 @@ save it in a data frame called `vac_admin`.
 
 ```{r}
 vac_admin <- vac[vac$FABRICANT!="No administrada",]
-```
-
-
-**Exercise:** Make a bar plot to show the number of administered vaccines
-grouped by sex. Is there any difference?
-
-```{r, include=FALSE}
-barplot(table(vac_pop_merge$SEXE), xlab="Sexe", ylab="Total",
-        main="Vacunes administrades per sexe")
 ```
 
 Lists allow one to group values through their elements. Let's say we want
@@ -178,7 +169,7 @@ plot it as a bar plot. (**Hint**: Check the `barplot()` function help for the ar
 `horiz` and `las`, combined with the argument `mar` for the function `par()` to be
 able to fit the axis text in the plot). 
 
-```{r, echo=FALSE}
+```{r barplotDoses, echo=FALSE}
 total_doses <- sapply(dosesbymanufacturer, sum, na.rm=TRUE)
 
 par(mar=c(5,10,4,2))
@@ -220,7 +211,6 @@ points(mean, pch=18, col="red", cex=2)
 ```
 
 
-
 # Data wrangling
 
 Next, we load the csv `poblacio_municipis.csv`, which contains the population Catalunya's
@@ -229,7 +219,7 @@ municipalities (column `Poblacio_padro`), together with other population indicat
 ```{r}
 pop <- read.csv("poblacio_municipis.csv")
 head(pop)
-table(pop$Any)lñ.-
+table(pop$Any)
 ```
 
 We can observe that this dataset contains data from different years. To continue with our
@@ -374,14 +364,9 @@ a match in `pop_sel`.
 containing how many doses were administered each day per 1000,000 inhabitants. 
 Which municipality administered the most and the least doses and at which date?
 
-$$
-Doses\ per\ 100K\ inhabitants = \frac{Doses}{Population}*100,000
-$$
-
 ```{r, include=FALSE}
 ## Create columns
 vac_pop_merge$dosis_100K_h <- vac_pop_merge$RECOMPTE / vac_pop_merge$Poblacio_padro * 100000
 vac_pop_merge[order(vac_pop_merge$dosis_100K_h, decreasing = TRUE),]
 ```
-
 

@@ -129,6 +129,7 @@ par(mfrow=c(1, 2))
 hist(pbyc[["Terra Alta"]], xlab="Population (inhabitants)", main="Terra Alta")
 hist(pbyc$Urgell, xlab="Population (inhabitants)", main="Urgell")
 ```
+
 Note that in the previous code we are using the double-bracket operator `[[`
 instead of the dollar `$` to access the element `Terra Alta` because this element
 has an space character in its name. Try to interpret the previous plots, how many
@@ -211,6 +212,14 @@ to `pop_sel` as a new column called `density`:
 ```{r}
 pop_sel$Density <- pop_sel$Poblacio_padro / km2
 head(pop_sel)
+```
+
+Let's say we want to visualize the relationship between population density
+and absolute population. We can do that using a scatter plot as follows.
+
+```{r popabsvsden, echo=TRUE}
+plot(pop_sel$Poblacio_padro, pop_sel$Density, xlab="Population (inhabitants)",
+     ylab="Population density")
 ```
 
 # Combining data

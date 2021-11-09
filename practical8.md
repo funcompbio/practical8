@@ -238,11 +238,13 @@ function, as follows:
     > hist(pbyc[["Terra Alta"]], xlab="Population (inhabitants)", main="Terra Alta")
     > hist(pbyc$Urgell, xlab="Population (inhabitants)", main="Urgell")
 
-![](comptaltaurgell-1.png) Note that in the previous code we are using
-the double-bracket operator `[[` instead of the dollar `$` to access the
-element `Terra Alta` because this element has an space character in its
-name. Try to interpret the previous plots, how many municipalities in
-*Urgell* and *Terra Alta* have less than 5,000 inhabitants?
+![](comptaltaurgell-1.png)
+
+Note that in the previous code we are using the double-bracket operator
+`[[` instead of the dollar `$` to access the element `Terra Alta`
+because this element has an space character in its name. Try to
+interpret the previous plots, how many municipalities in *Urgell* and
+*Terra Alta* have less than 5,000 inhabitants?
 
 Now, let’s calculate the mean municipality population for the county of
 *Terra Alta*. Having built the previous list object, we can make that
@@ -360,6 +362,15 @@ to `pop_sel` as a new column called `density`:
     4       1377.88   18.942143
     5       4321.98    6.524787
     6        962.70 1028.773242
+
+Let’s say we want to visualize the relationship between population
+density and absolute population. We can do that using a scatter plot as
+follows.
+
+    > plot(pop_sel$Poblacio_padro, pop_sel$Density, xlab="Population (inhabitants)",
+    +      ylab="Population density")
+
+![](popabsvsden-1.png)
 
 # Combining data
 

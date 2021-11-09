@@ -181,7 +181,8 @@ $Anoia
 <pre><code>&gt; par(mfrow=c(1, 2))
 &gt; hist(pbyc[[&quot;Terra Alta&quot;]], xlab=&quot;Population (inhabitants)&quot;, main=&quot;Terra Alta&quot;)
 &gt; hist(pbyc$Urgell, xlab=&quot;Population (inhabitants)&quot;, main=&quot;Urgell&quot;)</code></pre>
-<p><img src="comptaltaurgell-1.png" /> Note that in the previous code we are using the double-bracket operator <code>[[</code> instead of the dollar <code>$</code> to access the element <code>Terra Alta</code> because this element has an space character in its name. Try to interpret the previous plots, how many municipalities in <em>Urgell</em> and <em>Terra Alta</em> have less than 5,000 inhabitants?</p>
+<p><img src="comptaltaurgell-1.png" /></p>
+<p>Note that in the previous code we are using the double-bracket operator <code>[[</code> instead of the dollar <code>$</code> to access the element <code>Terra Alta</code> because this element has an space character in its name. Try to interpret the previous plots, how many municipalities in <em>Urgell</em> and <em>Terra Alta</em> have less than 5,000 inhabitants?</p>
 <p>Now, let’s calculate the mean municipality population for the county of <em>Terra Alta</em>. Having built the previous list object, we can make that calculation applying the function <code>mean()</code> to the corresponding element of the list:</p>
 <pre><code>&gt; mean(pbyc[[&quot;Terra Alta&quot;]])
 
@@ -247,6 +248,10 @@ Vallès Occidental   Vallès Oriental
 4       1377.88   18.942143
 5       4321.98    6.524787
 6        962.70 1028.773242</code></pre>
+<p>Let’s say we want to visualize the relationship between population density and absolute population. We can do that using a scatter plot as follows.</p>
+<pre><code>&gt; plot(pop_sel$Poblacio_padro, pop_sel$Density, xlab=&quot;Population (inhabitants)&quot;,
++      ylab=&quot;Population density&quot;)</code></pre>
+<p><img src="popabsvsden-1.png" /></p>
 <h1 id="combining-data">Combining data</h1>
 <p>One of the most common operations required to answer a question with data is to combine two datasets in some way. Let’s say we want to compare municipalities in terms of how many vaccine does per 100,000 inhabitants have been administered. For that purpose, we load a second dataset corresponding to the administered COVID19 vaccine doses by municipality in Catalonia (<code>dosis_municipi.csv</code>) as follows.</p>
 <pre><code>&gt; vac &lt;- read.csv(&quot;dosis_municipi.csv&quot;, sep=&quot;;&quot;, stringsAsFactors=FALSE)

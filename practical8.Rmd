@@ -1,6 +1,6 @@
 ---
 layout: page
-title: Practical 7
+title: Practical 8
 permalink: /practical8/
 ---
 
@@ -18,7 +18,8 @@ The learning objectives for this practical are:
 
   * How to create and use list objects.
   * How to perform implicit looping through lists.
-  * Learn visualizing data in different ways.
+  * How to merge data frames.
+  * Learn to visualize data in different ways.
 
 # Setup and background
 
@@ -28,23 +29,37 @@ and RStudio in your system. For a smooth development of this practical, it is
 strongly recommended that you follow and finish the previous
 [practical 7](/practical7/).
 
-We will download some COVID19 data to illustrate the use of R and RStudio.
+We will download some COVID19 vaccination data, together with Catalunya population
+data to illustrate data wrangling in R and RStudio.
 Please follow the next two steps:
 
-1. Go to the Catalan Health Departament COVID19 data portal at
-   [https://dadescovid.cat](https://dadescovid.cat) and switch the language to
-   "ENGLISH" using the pull-down menu on the top-right corner of the page.
-2. Follow the downloads link and on the next page click and download the file
-   corresponding to the "7 DAY AGGREGATION" for "CATALUNYA".
-   Make sure you know exactly where in your filesystem this file
-   has been downloaded. **Tip:** some browsers automatically download files
-   into a folder called "Downloads" or under a name corresponding to the
-   translation of "Downloads" to the default language of your operating system.
-3. Make a directory in your filesystem, for instance at your _home_ directory,
-   called `practical9` and copy in it the downloaded file.
-4. Since the downloaded file is a ZIP file, uncompress as you did in
-   [practical 1](/practical1/) so that you finally have a file called
-   `catalunya_setmanal.csv` in the directory `practical9`.
+* __COVID19 vaccination by municipality__:
+
+   1. Go to the Catalan Health Departament COVID19 data portal at
+      [https://dadescovid.cat](https://dadescovid.cat) and switch the language to
+      "ENGLISH" using the pull-down menu on the top-right corner of the page.
+   2. Follow the downloads link and on the next page, go to the section 
+      "Other Downloads" and click and download the "CSV" file corresponding to
+      "Vaccination for COVID-19: administered doses by municipality".
+      Make sure you know exactly where in your filesystem this file
+      has been downloaded. **Tip:** some browsers automatically download files
+      into a folder called "Downloads" or under a name corresponding to the
+      translation of "Downloads" to the default language of your operating system.
+   3. Make a directory in your filesystem, for instance at your _home_ directory,
+      called `practical8` and copy in it the downloaded file.
+   4. Change the name of the file you just downloaded to `dosis_municipi.csv`, 
+      so that you finally have a file called `dosis_municipi.csv` in the 
+      directory `practical8`.
+      
+* __Population by municipality__:
+
+   1. Download the Catalan Urbanistic Map dataset at the [Dades Obertes de Catalunya](https://governobert.gencat.cat/ca/dades_obertes)
+      data portal. You should follow the following [link](https://analisi.transparenciacatalunya.cat/en/Urbanisme-infraestructures/Dades-del-mapa-urban-stic-de-Catalunya/epsm-zskb) 
+      and donwload the data by going to the top right corner and select "Export" 
+      and then "CSV". This dataset includes information of the population of Catalunya
+      by municipality.
+   2. Copy the donwloaded file to the `practical8` directory and change its name
+      to `poblacio_municipis.csv`.
 
 If you are using the UPF [myapps](https://myapps.upf.edu) cloud to run RStudio,
 then you need to either use an internet browser in _myapps_ to download the data
@@ -52,82 +67,77 @@ file directly in the _myapps_ cloud or upload to the _myapps_ cloud the file
 that you have downloaded in your own computer.
 
 ```{r, include=FALSE}
-## read COVID19 data
-dat <- read.csv("catalunya_setmanal.csv", sep=";", stringsAsFactors=TRUE)
-
-## subset the data from the general population
-datg <- dat[dat$RESIDENCIA == "No", ]
-
-## fetch starting date
-startingdate <- as.Date(datg$DATA_INI)
-
-## extract the month from the starting date
-m <- months(startingdate, abbreviate=TRUE)
-
-## build a factor for the months of the year in the data
-mf <- factor(m, levels=c("Jan", "Feb", "Mar", "Apr", "May", "Jun",
-                         "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"))
-mf <- droplevels(mf)
+## Download required file
+download.file("https://analisi.transparenciacatalunya.cat/api/views/irki-p3c7/rows.csv?accessType=DOWNLOAD&bom=true&format=true&delimiter=%3B&sorting=true", destfile="dosis_municipi.csv")
 ```
 
 
 # Lists and implicit looping
 
+We first load the vaccination dataset `dosis_municipi.csv` by using the function 
+`read.csv()`. As you can see, this data set contains inormation on the administered
+doses of the different COVID19, by sex and municipality.
+
+```{r}
+vac <- read.csv("dosis_municipi.csv", sep=";", stringsAsFactors=FALSE)
+head(vac)
+
+table(vac$FABRICANT)
+```
+
+Now, remove the rows that correspond to non-administered vaccines and 
+save it in a data frame called `vac_admin`.
+
+```{r}
+vac_admin <- vac[vac$FABRICANT!="No administrada",]
+```
+
+
 Lists allow one to group values through their elements. Let's say we want
-to group the values of the risk of outbreak in the previous data, by the
-month in which the data belongs to. We can do that using the function
+to group the number of administered doses in the previous data, by the
+type (or fabricant) of the vaccine. We can do that using the function
 `split()` to which we should give a first argument of the values we want
 to group and a second argument with the grouping factor.
 
 ```{r}
-iepgbymonth <- split(datg$IEPG_CONFIRMAT, mf)
-class(iepgbymonth)
-length(iepgbymonth)
-names(iepgbymonth)
-head(iepgbymonth, n=3)
+dosesbyfabricant <- split(vac_admin$RECOMPTE, vac_admin$FABRICANT)
+class(dosesbyfabricant)
+length(dosesbyfabricant)
+names(dosesbyfabricant)
+head(dosesbyfabricant, n=3)
 ```
 
 Grouping values can be useful in data analysis when we want to examine the
 data separately by groups. Let's say we want to visualize the distribution
-of values of the risk of outbreak for the month of April and June, next to
-each other. We can use the function `hist()` for that purpose, creating a
-grid of two plotting panes using the `par()` function, as follows:
+of administered doses for Pfizer and Moderna, next to each other. We can 
+use the function `hist()` for that purpose, creating a grid of two 
+plotting panes using the `par()` function, as follows:
 
-```{r IEPGAprilJune}
+```{r dosesPfizerModerna}
 par(mfrow=c(1, 2))
-hist(iepgbymonth$Apr, xlab="Risk of outbreak", main="April")
-hist(iepgbymonth$Jun, xlab="Risk of outbreak", main="June")
+hist(dosesbyfabricant$`BioNTech / Pfizer`, xlab="Administred Doses", main="Pfizer")
+hist(dosesbyfabricant$`Moderna / Lonza`, xlab="Administred Doses", main="Moderna")
 ```
 
+Note that as the name of the list elements contain spaces and the character `/` we need
+to add backquote to delimit the name. We could also use double square brackets (`[[]]`)
+to access a specific element in the list, for example `dosesbyfabricant[["BioNTech / Pfizer"]]`.
 
-![](IEPGAprilJune.png)
-
-Now, let's calculate the mean of the risk of outbreak for the month of April.
+Now, let's calculate the mean doses administered of Moderna vaccines.
 Having built the previous `list` object, we can make that calculation applying
 the function `mean()` to the corresponding element of the list:
 
 ```{r}
-mean(iepgbymonth$Apr)
+mean(dosesbyfabricant$`Moderna / Lonza`)
 ```
-
-
-Let's say we want to compare this value with the mean value for the month of
-March:
+Let's say we want to compare this value with the mean value for the Pfizer
+vaccines:
 
 ```{r}
-mean(iepgbymonth$Mar)
+mean(dosesbyfabricant$`BioNTech / Pfizer`)
 ```
 
-Here we got an `NA` value because the month of March has missing values for
-some weeks and, by default, the function `mean()` propagates that `NA` value
-to the result. We can ask the `mean()` function to exclude `NA` values and
-do the calculation on the non-missing ones using the argument `na.rm=TRUE`:
-
-```{r}
-mean(iepgbymonth$Mar, na.rm=TRUE)
-```
-
-It would be tedious to do that calculation for each different month by
+It would be tedious to do that calculation for each different fabricant by
 writing one such function call for each element of the list. As an alternative,
 we could use a `while` or `for` loop that would iterate over the elements of
 the list. However, R provides a more compact way to iterating over lists,
@@ -147,15 +157,45 @@ We can calculate the mean of the risk of outbreak per month with the following
 call to the `sapply()` function:
 
 ```{r}
-sapply(iepgbymonth, mean, na.rm=TRUE)
+sapply(dosesbyfabricant, mean, na.rm=TRUE)
 ```
 where here the argument `na.rm=TRUE` is passed by `sapply()` to each call to
-the `mean()` function. Try the same call using the `lapply()` function and
-notice the difference in the output.
+the `mean()` function. This argument excludes `NA` (missing) values and do the
+calculation with the non-missing ones. Try the same call using the `lapply()` function 
+and notice the difference in the output.
 
-Plot the distribution of the number of deaths (column `EXITUS`) per month in
-the general population (using box plots). Calculate the mean of the number of
-deaths per month in the general population and plot it over the previous box
-plots using the function `points()`. Check the help page of `points()` to find
-out how to use it, figure out how make the plotted point to be a solid diamond
+**Exercise:**
+
+Plot the distribution of the number of administered Pfizer vaccines in 
+Barcelona (municipality) per month, using box plots (**hint**: Check the materials
+on [practical 7](https://funcompbio.github.io/practical7/) to remember how to 
+extract months from dates and convert them to ordered factors).
+
+Calculate the mean of the number of administered Pfizer doses per month in 
+Barcelona and plot it over the previous box plots using the function `points()`.
+Check the help page of `points()` to find out how to use it, figure out how 
+make the plotted point to be a red solid diamond
 (**hint:** look at the argument `pch`).
+
+Your plot should look like the one below:
+
+```{r pfizerBCNperMonth, echo = FALSE}
+vac_bcn_pfi <- vac_admin[vac_admin$MUNICIPI == "BARCELONA" & vac_admin$FABRICANT == "BioNTech / Pfizer",]
+
+## Select month info
+m <- months(as.Date(vac_bcn_pfi$DATA), abbreviate = TRUE)
+mf <- factor(m, levels=c("Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                         "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"))
+
+
+vac_bcn_mf <- split(vac_bcn_pfi$RECOMPTE, mf)
+mean <- sapply(vac_bcn_mf, mean)
+
+boxplot(vac_bcn_pfi$RECOMPTE ~ mf,
+        xlab = "Month", ylab="Administered Vaccines",
+        main = "Administered Pfizer Vaccines in Barcelona")
+points(mean, pch=18, col="red", cex=2)
+```
+
+# Data wrangling
+

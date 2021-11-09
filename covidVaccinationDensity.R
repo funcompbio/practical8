@@ -20,7 +20,7 @@ barplot(sapply(vac_fabricant, sum))
 ## Recompte es total de vacunats?
 
 
-## Població per comarca
+## Poblacio per comarca
 ## Url: https://analisi.transparenciacatalunya.cat/Urbanisme-infraestructures/Dades-del-mapa-urban-stic-de-Catalunya/epsm-zskb
 download.file("https://analisi.transparenciacatalunya.cat/api/views/epsm-zskb/rows.csv?accessType=DOWNLOAD&sorting=true", "poblacio_municipis.csv")
 pop <- read.csv("poblacio_municipis.csv")

@@ -46,9 +46,16 @@ steps:
       has been downloaded. **Tip:** some browsers automatically download files
       into a folder called "Downloads" or under a name corresponding to the
       translation of "Downloads" to the default language of your operating system.
-   3. Make a directory in your filesystem, for instance at your _home_ directory,
+   3. The service that hosts these data, the
+      [Catalonian Open Government Portal](https://governobert.gencat.cat), provides
+      this file as an uncompressed CSV file of over 100MB large, which may take a
+      few minutes to download. You can download a compressed ZIP version of this
+      file from this
+      [link](Vacunaci__per_al_COVID-19__dosis_administrades_per_municipi.zip).
+      Once downloaded, you will have to uncompress it to obtain the CSV file.
+   4. Make a directory in your filesystem, for instance at your _home_ directory,
       called `practical8` and copy in it the downloaded file.
-   4. **Change the name of the file you just downloaded to `dosis_municipi.csv`**, 
+   5. **Change the name of the file you just downloaded to `dosis_municipi.csv`**, 
       so that you finally have a file called `dosis_municipi.csv` in the 
       directory `practical8`.
       
@@ -58,10 +65,10 @@ steps:
       [Dades Obertes de Catalunya](https://governobert.gencat.cat/ca/dades_obertes)
       data portal. You should follow the following
       [link](https://analisi.transparenciacatalunya.cat/en/Urbanisme-infraestructures/Dades-del-mapa-urban-stic-de-Catalunya/epsm-zskb) 
-      and donwload the data by going to the top right corner and select "Export"
+      and download the data by going to the top right corner and select "Export"
       and then "CSV". This dataset includes information of the population of Catalonia
       by municipality.
-   2. Copy the donwloaded file to the `practical8` directory and
+   2. Copy the downloaded file to the `practical8` directory and
       **change its name to `poblacio_municipis.csv`**.
 
 If you are using the UPF [myapps](https://myapps.upf.edu) cloud to run RStudio,
@@ -77,8 +84,9 @@ download.file("https://analisi.transparenciacatalunya.cat/api/views/epsm-zskb/ro
 
 # Reading and filtering data
 
-Let's load the CSV file `poblacio_municipis.csv`, which contains some demographic indicators
-for the 948 municipalities in Catalonia such as the population (column `Poblacio_padro`).
+Let's load the CSV file `poblacio_municipis.csv`, which contains some
+demographic indicators for the 948 municipalities in Catalonia such as the
+population (column `Poblacio_padro`).
 
 ```{r}
 pop <- read.csv("poblacio_municipis.csv")
@@ -87,14 +95,16 @@ head(pop, n=3)
 table(pop$Any)
 ```
 
-We can observe that this dataset contains data from different years. To continue with our
-analysis, we will select the most recent data corresponding to 2020 and, moreover, we will
-only keep the columns `Codi_ine_5_txt` (identifier for the municipality), `NomMun`, `Comarca`, 
-`Poblacio_padro` and `Superficie_ha`.
+We can observe that this dataset contains data from different years. To continue
+with our analysis, we will select the most recent data corresponding to 2021 and,
+moreover, we will only keep the columns `Codi_ine_5_txt` (identifier for the
+municipality), `NomMun`, `Comarca`, `Poblacio_padro` and `Superficie_ha`,
+corresponding to town identifier, town name, county, population, town surface in
+[hectare](https://en.wikipedia.org/wiki/Hectare) (ha), respectively.
 
 ```{r}
 ## build a logical mask to select for year 2020
-mask <- pop$Any == 2020
+mask <- pop$Any == 2021
 ## build a character string vector of the selected columns
 selcols <- c("Codi_ine_5_txt", "NomMun", "Comarca", "Poblacio_padro", "Superficie_ha")
 ## subset the data.frame object 'pop' for rows in 'mask' and columns in 'selcols'
@@ -121,8 +131,9 @@ head(pbyc)
 Grouping values can be useful in data analysis when we want to examine the data
 separately by groups. Let’s say we want to visualize the distribution of the
 population for the two counties `Terra Alta` and `Urgell`, next to each
-other. We can use the function `hist()` for that purpose, creating a grid of two
-plotting panes using the `par()` function, as follows:
+other using a [histogram](https://en.wikipedia.org/wiki/Histogram). We can use
+the function `hist()` for that purpose, creating a grid of two plotting panes
+using the `par()` function, as follows:
 
 ```{r comptaltaurgell, echo=TRUE}
 par(mfrow=c(1, 2))
@@ -132,8 +143,10 @@ hist(pbyc$Urgell, xlab="Population (inhabitants)", main="Urgell")
 
 Note that in the previous code we are using the double-bracket operator `[[`
 instead of the dollar `$` to access the element `Terra Alta` because this element
-has an space character in its name. Try to interpret the previous plots, how many
-municipalities in _Urgell_ and _Terra Alta_ have less than 5,000 inhabitants?
+has an space character in its name.
+
+**Exercise:** Try to interpret the previous plots, how many municipalities in
+_Urgell_ and _Terra Alta_ have less than 5,000 inhabitants?
 
 Now, let's calculate the mean municipality population for the county of _Terra Alta_.
 Having built the previous list object, we can make that calculation applying the
@@ -187,9 +200,9 @@ By default, these functions return an ascending order, but by setting the argume
 `decreasing=TRUE`, we can obtain a descending order.
 
 **Exercise:** Using the previous functions `sort()` and `order()` and the
-columns `NomMun` (municipality name) and `Poblacio_padro` (municipality
-population), find out how many inhabitants have the three most and three least
-populated municipalities and their names.
+columns `NomMun` (town name) and `Poblacio_padro` (town population), find out
+how many inhabitants have the three most and three least populated
+municipalities and their names.
 
 # Adding new columns
 
@@ -237,7 +250,7 @@ obtain the position in the input vector that contains the maximum value.
 
 One of the most common operations required to answer a question with data
 is to combine two datasets in some way. Let's say we want to compare
-municipalities in terms of how many vaccine does per 100,000 inhabitants
+municipalities in terms of how many vaccine doses per 100,000 inhabitants
 have been administered. For that purpose, we load a second dataset
 corresponding to the administered COVID19 vaccine doses by municipality
 in Catalonia (`dosis_municipi.csv`) as follows.
@@ -320,30 +333,33 @@ smaller than `vac_admin`, because it doesn't keep rows that didn't find
 a match in `pop_sel`.
 
 **Exercise:** Using `vac_pop_merge`, add a new column named `doses_100K_h` 
-containing how many doses were administered each day per 100,000 inhabitants. 
-The column `RECOMPTE` contains the number of administered doses.
-Which municipality administered the most and the least doses and at which date?
+containing how many vaccine doses were administered each day per 100,000
+inhabitants. The column `RECOMPTE` contains the number of administered doses.
+Which towns administered the highest and the lowest rate of vaccine doses
+per 100,000 inhabitants, from what vaccine manufacturer and at which date.
 
 ```{r, include=FALSE}
-vac_pop_merge$doses_100K_h <- vac_pop_merge$RECOMPTE / vac_pop_merge$Poblacio_padro * 100000
-vac_pop_merge[order(vac_pop_merge$doses_100K_h, decreasing = TRUE),]
+vac_pop_merge$doses_100K_h <- 100000 * vac_pop_merge$RECOMPTE / vac_pop_merge$Poblacio_padro
+head(vac_pop_merge[order(vac_pop_merge$doses_100K_h, decreasing = TRUE),])
+tail(vac_pop_merge[order(vac_pop_merge$doses_100K_h, decreasing = TRUE),])
 ```
 
 To continue with our analysis, we need to add a column containing a month as 
-a factor. Thus, we repeat the steps explained in the previous [practical 7](/practical7/)
-to convert the column `DATA` to a date, extract the months and convert them to 
-a factor with ordered levels:
+a factor. Thus, we repeat the steps explained in the previous
+[practical 7](/practical7/) to convert the column `DATA` to a date, extract the
+months and convert them to a factor with ordered levels:
 
 ```{r}
 vac_pop_merge$month <- months(as.Date(vac_pop_merge$DATA), abbreviate=TRUE)
-vac_pop_merge$month <- factor(vac_pop_merge$month, levels=c("Jan", "Feb", "Mar", "Apr", "May", "Jun",
-                         "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"))
+vac_pop_merge$month <- factor(vac_pop_merge$month,
+                              levels=c("Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                                       "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"))
 ```
 
-Next, we will select the municipalities with high population (more than 200,000
+Next, we will select the towns with high population (more than 200,000
 residents) and save them into a data frame called `vac_high`. Now we want to 
-obtain the total doses administered per inhabitant every month in this specific
-municipalities. Again, we take advantege of the combination of `split` and 
+obtain the total vaccine doses administered per inhabitant every month in these
+specific towns. Again, we take advantege of the combination of `split` and 
 `sapply` to do this calculation. Finally, we create a new data frame with the
 summarised data, including a column called `muni_type` that identifies the 
 type of municipalities ("High" as in "High population") used for extracting
@@ -376,8 +392,8 @@ dosesh_low <- split(vac_low$doses_100K_h, vac_low$month)
 total_dosesh_low <- sapply(dosesh_low, sum)
 
 df_low <- data.frame("month"=names(total_dosesh_low),
-                      "doses_h"=total_dosesh_low,
-                      "muni_type"="Low")
+                     "doses_h"=total_dosesh_low,
+                     "muni_type"="Low")
 
 barplot(df_low$doses_h, names.arg = df_low$month,
         main="Lowly populated municipalities")

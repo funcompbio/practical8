@@ -15,13 +15,13 @@
 <ol type="1">
 <li>Go to the Catalan Health Departament COVID19 data portal at <a href="https://dadescovid.cat" class="uri">https://dadescovid.cat</a> and switch the language to “ENGLISH” using the pull-down menu on the top-right corner of the page.</li>
 <li>Follow the downloads link and on the next page, go to the section “Other Downloads” and click and download the “CSV” file corresponding to “Vaccination for COVID-19: administered doses by municipality”. Make sure you know exactly where in your filesystem this file has been downloaded. <strong>Tip:</strong> some browsers automatically download files into a folder called “Downloads” or under a name corresponding to the translation of “Downloads” to the default language of your operating system.</li>
-<li>The service that hosts these data, the <a href="https://governobert.gencat.cat">Catalonian Open Government Portal</a>, provides this file as an uncompressed CSV file of over 100MB large, which may take a few minutes to download. You can download a compressed ZIP version of this file from this <a href="Vacunaci__per_al_COVID-19__dosis_administrades_per_municipi.zip">link</a>. Once downloaded, you will have to uncompress it to obtain the CSV file.</li>
+<li>The service that hosts these data, the <a href="https://governobert.gencat.cat/en/dades_obertes">Dades Obertes de Catalunya</a> data portal, provides this file as an uncompressed CSV file of over 100MB large, which may take few minutes to download. You can download a compressed ZIP version of this file from this <a href="Vacunaci__per_al_COVID-19__dosis_administrades_per_municipi.zip">link</a>. Once downloaded, you will have to uncompress it to obtain the CSV file.</li>
 <li>Make a directory in your filesystem, for instance at your <em>home</em> directory, called <code>practical8</code> and copy in it the downloaded file.</li>
 <li><strong>Change the name of the file you just downloaded to <code>dosis_municipi.csv</code></strong>, so that you finally have a file called <code>dosis_municipi.csv</code> in the directory <code>practical8</code>.</li>
 </ol></li>
 <li><p><strong>Population by municipality</strong>:</p>
 <ol type="1">
-<li>Download the Catalan Urbanistic Map dataset at the <a href="https://governobert.gencat.cat/ca/dades_obertes">Dades Obertes de Catalunya</a> data portal. You should follow the following <a href="https://analisi.transparenciacatalunya.cat/en/Urbanisme-infraestructures/Dades-del-mapa-urban-stic-de-Catalunya/epsm-zskb">link</a> and download the data by going to the top right corner and select “Export” and then “CSV”. This dataset includes information of the population of Catalonia by municipality.</li>
+<li>Download the Catalan Urbanistic Map dataset at the <a href="https://governobert.gencat.cat/en/dades_obertes">Dades Obertes de Catalunya</a> data portal. You should follow the following <a href="https://analisi.transparenciacatalunya.cat/en/Urbanisme-infraestructures/Dades-del-mapa-urban-stic-de-Catalunya/epsm-zskb">link</a> and download the data by going to the top right corner and select “Export” and then “CSV”. This dataset includes information of the population of Catalonia by municipality.</li>
 <li>Copy the downloaded file to the <code>practical8</code> directory and <strong>change its name to <code>poblacio_municipis.csv</code></strong>.</li>
 </ol></li>
 </ul>
@@ -94,7 +94,7 @@
 2012 2013 2014 2015 2016 2017 2018 2019 2020 2021 
  948  948  948  948  948  948  948  948  948  948 </code></pre>
 <p>We can observe that this dataset contains data from different years. To continue with our analysis, we will select the most recent data corresponding to 2021 and, moreover, we will only keep the columns <code>Codi_ine_5_txt</code> (identifier for the municipality), <code>NomMun</code>, <code>Comarca</code>, <code>Poblacio_padro</code> and <code>Superficie_ha</code>, corresponding to town identifier, town name, county, population, town surface in <a href="https://en.wikipedia.org/wiki/Hectare">hectare</a> (ha), respectively.</p>
-<pre><code>&gt; ## build a logical mask to select for year 2020
+<pre><code>&gt; ## build a logical mask to select for year 2021
 &gt; mask &lt;- pop$Any == 2021
 &gt; ## build a character string vector of the selected columns
 &gt; selcols &lt;- c(&quot;Codi_ine_5_txt&quot;, &quot;NomMun&quot;, &quot;Comarca&quot;, &quot;Poblacio_padro&quot;, &quot;Superficie_ha&quot;)

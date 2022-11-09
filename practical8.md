@@ -35,11 +35,11 @@ next two steps:
         automatically download files into a folder called “Downloads” or
         under a name corresponding to the translation of “Downloads” to
         the default language of your operating system.
-    3.  The service that hosts these data, the [Catalonian Open
-        Government Portal](https://governobert.gencat.cat), provides
-        this file as an uncompressed CSV file of over 100MB large, which
-        may take a few minutes to download. You can download a
-        compressed ZIP version of this file from this
+    3.  The service that hosts these data, the [Dades Obertes de
+        Catalunya](https://governobert.gencat.cat/en/dades_obertes) data
+        portal, provides this file as an uncompressed CSV file of over
+        100MB large, which may take few minutes to download. You can
+        download a compressed ZIP version of this file from this
         [link](Vacunaci__per_al_COVID-19__dosis_administrades_per_municipi.zip).
         Once downloaded, you will have to uncompress it to obtain the
         CSV file.
@@ -54,7 +54,7 @@ next two steps:
 
     1.  Download the Catalan Urbanistic Map dataset at the [Dades
         Obertes de
-        Catalunya](https://governobert.gencat.cat/ca/dades_obertes) data
+        Catalunya](https://governobert.gencat.cat/en/dades_obertes) data
         portal. You should follow the following
         [link](https://analisi.transparenciacatalunya.cat/en/Urbanisme-infraestructures/Dades-del-mapa-urban-stic-de-Catalunya/epsm-zskb)
         and download the data by going to the top right corner and
@@ -149,7 +149,7 @@ corresponding to 2021 and, moreover, we will only keep the columns
 town name, county, population, town surface in
 [hectare](https://en.wikipedia.org/wiki/Hectare) (ha), respectively.
 
-    > ## build a logical mask to select for year 2020
+    > ## build a logical mask to select for year 2021
     > mask <- pop$Any == 2021
     > ## build a character string vector of the selected columns
     > selcols <- c("Codi_ine_5_txt", "NomMun", "Comarca", "Poblacio_padro", "Superficie_ha")

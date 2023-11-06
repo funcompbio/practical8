@@ -24,29 +24,23 @@ next two steps:
 
 -   **COVID19 vaccination by municipality**:
 
-    1.  Go to the Catalan Health Departament COVID19 data portal at
-        <https://dadescovid.cat> and switch the language to “ENGLISH”
-        using the pull-down menu on the top-right corner of the page.
-    2.  Follow the downloads link and on the next page, go to the
-        section “Other Downloads” and click and download the “CSV” file
-        corresponding to “Vaccination for COVID-19: administered doses
-        by municipality”. Make sure you know exactly where in your
-        filesystem this file has been downloaded. **Tip:** some browsers
-        automatically download files into a folder called “Downloads” or
-        under a name corresponding to the translation of “Downloads” to
-        the default language of your operating system.
-    3.  The service that hosts these data, the [Dades Obertes de
-        Catalunya](https://governobert.gencat.cat/en/dades_obertes) data
-        portal, provides this file as an uncompressed CSV file of over
-        100MB large, which may take few minutes to download. You can
-        download a compressed ZIP version of this file from this
+    1.  We will download the COVID19 vaccination data by municipality
+        from the [open data
+        portal](https://analisi.transparenciacatalunya.cat/Salut/Vacunaci-per-al-COVID-19-dosis-administrades-per-m/irki-p3c7).
+        However, this data portal provides the data as an uncompressed
+        CSV file of over 100MB large, which may take few minutes to
+        download. You can download a compressed ZIP version of this file
+        from this
         [link](Vacunaci__per_al_COVID-19__dosis_administrades_per_municipi.zip).
         Once downloaded, you will have to uncompress it to obtain the
-        CSV file.
-    4.  Make a directory in your filesystem, for instance at your *home*
+        CSV file using the instruction:
+
+            $ unzip Vacunaci__per_al_COVID-19__dosis_administrades_per_municipi.zip
+
+    2.  Make a directory in your filesystem, for instance at your *home*
         directory, called `practical8` and copy in it the downloaded
         file.
-    5.  **Change the name of the file you just downloaded to
+    3.  **Change the name of the file you just downloaded to
         `dosis_municipi.csv`**, so that you finally have a file called
         `dosis_municipi.csv` in the directory `practical8`.
 
@@ -54,19 +48,17 @@ next two steps:
 
     1.  Download the Catalan Urbanistic Map dataset at the [Dades
         Obertes de
-        Catalunya](https://governobert.gencat.cat/en/dades_obertes) data
-        portal. You should follow the following
-        [link](https://analisi.transparenciacatalunya.cat/en/Urbanisme-infraestructures/Dades-del-mapa-urban-stic-de-Catalunya/epsm-zskb)
-        and download the data by going to the top right corner and
-        select “Export” and then “CSV”. This dataset includes
+        Catalunya](https://governobert.gencat.cat/ca/dades_obertes) data
+        portal. You can either click on the link at the bottom right
+        called “Access the catalog” and then search for “Dades del mapa
+        urbanístic de Catalunya” or directly go to the following
+        [link](https://analisi.transparenciacatalunya.cat/en/Urbanisme-infraestructures/Dades-del-mapa-urban-stic-de-Catalunya/epsm-zskb).
+        Once you are on the page entitled “Dades del mapa urbanístic de
+        Catalunya”, download the data by going to the top right corner
+        and select “Export” and then “CSV”. This dataset includes
         information of the population of Catalonia by municipality.
     2.  Copy the downloaded file to the `practical8` directory and
         **change its name to `poblacio_municipis.csv`**.
-
-If you are using the UPF [myapps](https://myapps.upf.edu) cloud to run
-RStudio, then you need to either use an internet browser in *myapps* to
-download the data file directly in the *myapps* cloud or upload to the
-*myapps* cloud the file that you have downloaded in your own computer.
 
 Reading and filtering data
 ==========================
@@ -78,79 +70,79 @@ the population (column `Poblacio_padro`).
     > pop <- read.csv("poblacio_municipis.csv")
     > dim(pop)
 
-    [1] 9480   69
+    [1] 10428    69
 
     > head(pop, n=3)
 
-       Any Codi_ine_5_txt Codi_ine_6_txt    NomMun    Comarca  AFT Costa
-    1 2016           8111          81115     Malla      Osona   CC     0
-    2 2017          25088         250886 Estamariu Alt Urgell APiA     0
-    3 2021           8130          81304  Montclar   Berguedà   CC     0
-              Muntanya Poblacio_padro Superficie_ha X05_SU X05_perce_SU X05_SUC
-    1                             267      1097.097 2.8504       0.2598  0.0000
-    2 Zona de muntanya            124      2116.372 3.2165       0.1520  3.2165
-    3 Zona de muntanya            136      2190.623 1.3154       0.0000  1.3154
+       Any Codi_ine_5_txt Codi_ine_6_txt       NomMun     Comarca AFT Costa
+    1 2012           8025          80253      el Bruc       Anoia  PE     0
+    2 2012           8026          80266     el Brull       Osona  CC     0
+    3 2012           8027          80272 les Cabanyes Alt Penedès  PE     0
+              Muntanya Poblacio_padro Superficie_ha   X05_SU X05_perce_SU  X05_SUC
+    1                            2029     4733.5830 140.6794       2.9719 138.1059
+    2 Zona de muntanya            261     4153.0043  28.5859       0.6883  28.1810
+    3                             947      115.5193  23.8846      20.6759  23.3431
       X05_perce_SUC X05_SNC X05_perce_SNC X05_SURB X05_perce_SUR X05_SUD
-    1         0.000  2.8504        0.2598   6.5897        0.6007  6.5897
-    2         0.152  0.0000        0.0000   0.0000        0.0000  0.0000
-    3         0.000  0.0000        0.0000   0.0000        0.0000  0.0000
-      X05_perce_SUD X05_SND X05_perce_SND  X05_SNU X05_perce_SNU X06_Class_no_SNU
-    1        0.6007       0             0 1087.657       99.1395           9.4401
-    2        0.0000       0             0 2113.156       99.8480           3.2165
-    3        0.0000       0             0 2189.307        0.0000           0.0000
+    1        2.9176  2.5736        0.0544   6.6230        0.1399  6.6230
+    2        0.6786  0.4049        0.0097  25.1602        0.6058 25.1602
+    3       20.2071  0.5416        0.4688  18.5540       16.0614 18.5540
+      X05_perce_SUD X05_SND X05_perce_SND   X05_SNU X05_perce_SNU X06_Class_no_SNU
+    1        0.1399       0             0 4586.2805       96.8881         147.3025
+    2        0.6058       0             0 4099.2582       98.7059          53.7461
+    3       16.0614       0             0   73.0806       63.2627          42.4387
       X06_perce_Class_no_snu X07_densitat_pob_km2 X08_densitat_pob_urba_Km2
-    1                 0.8605              24.2431                  9367.203
-    2                 0.1520               5.8591                  3855.155
-    3                 0.0000               6.2115                 10338.793
+    1                 3.1119              42.9872                 1442.2863
+    2                 1.2941               6.3583                  913.0373
+    3                36.7373             822.1686                 3964.8912
       X09_Perce_SNC_SU X10_Perce_SUD_SU X11_Perce_SND_SU X012_Qual_SUC_AE
-    1              100         231.1883                0                0
-    2                0           0.0000                0                0
-    3                0           0.0000                0                0
+    1           1.8294           4.7079                0          11.7035
+    2           1.4164          88.0161                0           0.0000
+    3           2.2674          77.6819                0           0.0000
       X12_A1_SUC X12_A2_SUC X12_A3_SUC X13_Qual_SUC_R X13_R1_SUC X13_R2_SUC
-    1          0          0          0         0.0000     0.0000          0
-    2          0          0          0         2.2132     2.2132          0
-    3          0          0          0         0.8306     0.8306          0
+    1    11.7035          0          0        85.9369     0.9245     0.0000
+    2     0.0000          0          0        20.3507     0.0000     0.0000
+    3     0.0000          0          0        13.8351     5.0349     5.0386
       X13_R3_SUC X13_R4_SUC X13_R5_SUC X13_R6_SUC X14_Qual_SUC_Altres X14_M1_SUC
-    1          0          0          0          0                   0          0
-    2          0          0          0          0                   0          0
-    3          0          0          0          0                   0          0
+    1          0          0     8.2275    76.7850              2.7536          0
+    2          0          0     0.0000    20.3507              0.1780          0
+    3          0          0     0.0000     3.7615              1.1516          0
       X14_M2_SUC X14_M3_SUC X15_Qual_SUC_SISTEMES X15_SA_SUC X15_SC_SUC X15_SD_SUC
-    1          0          0                0.0000          0          0          0
-    2          0          0                1.0047          0          0          0
-    3          0          0                0.4855          0          0          0
+    1     2.7536          0               37.7864          0          0          0
+    2     0.1780          0                7.6725          0          0          0
+    3     1.1516          0                8.3682          0          0          0
       X15_SE_SUC X15_SF_SUC X15_SH_SUC X15_SP_SUC X15_SS_SUC X15_ST_SUC X15_SV_SUC
-    1     0.0000          0          0          0          0     0.0000      0.000
-    2     0.1239          0          0          0          0     0.0016      0.000
-    3     0.0759          0          0          0          0     0.0064      0.128
+    1     2.5910          0          0          0     3.6376     0.0000    11.0487
+    2     2.0338          0          0          0     0.0000     0.7045     2.4458
+    3     0.6412          0          0          0     0.0000     0.0192     2.0692
       X15_SX0_SUC X15_SX1_SUC X15_SX2_SUC X16_QUAL_snu X16_N1_SNU X16_N2_SNU
-    1           0      0.0000      0.0000     1055.158   836.9872   217.5711
-    2           0      0.3854      0.4937     2060.441  1221.0300     0.0000
-    3           0      0.2397      0.0355     2188.969  1906.6977     0.0000
+    1      0.0548      9.4575     10.9968    4422.1847  2004.9363  2406.4240
+    2      0.0000      1.1271      1.3614    4028.5438   547.4568   739.7637
+    3      0.0000      3.2580      2.3806      64.2643    27.6080    36.6563
       X16_N3_SNU X16_N4_SNU X17_Sol_resid_habt X18_Sol_AE_habt X19_Zverdes_habt
-    1     0.0000     0.5993             0.0000               0           0.0000
-    2   839.4111     0.0000           178.4855               0           0.0000
-    3   282.2713     0.0000            61.0761               0           9.4124
+    1      0.000    10.8243           423.5432         57.6813          54.4542
+    2   2741.323     0.0000           779.7221          0.0000          93.7075
+    3      0.000     0.0000           146.0939          0.0000          21.8498
       X20_Equip_habt
-    1         0.0000
-    2         9.9923
-    3         5.5821
+    1        12.7696
+    2        77.9217
+    3         6.7704
 
     > table(pop$Any)
 
 
-    2012 2013 2014 2015 2016 2017 2018 2019 2020 2021 
-     948  948  948  948  948  948  948  948  948  948 
+    2012 2013 2014 2015 2016 2017 2018 2019 2020 2021 2022 
+     948  948  948  948  948  948  948  948  948  948  948 
 
 We can observe that this dataset contains data from different years. To
 continue with our analysis, we will select the most recent data
-corresponding to 2021 and, moreover, we will only keep the columns
+corresponding to 2022 and, moreover, we will only keep the columns
 `Codi_ine_5_txt` (identifier for the municipality), `NomMun`, `Comarca`,
 `Poblacio_padro` and `Superficie_ha`, corresponding to town identifier,
 town name, county, population, town surface in
 [hectare](https://en.wikipedia.org/wiki/Hectare) (ha), respectively.
 
-    > ## build a logical mask to select for year 2021
-    > mask <- pop$Any == 2021
+    > ## build a logical mask to select for year 2022
+    > mask <- pop$Any == 2022
     > ## build a character string vector of the selected columns
     > selcols <- c("Codi_ine_5_txt", "NomMun", "Comarca", "Poblacio_padro", "Superficie_ha")
     > ## subset the data.frame object 'pop' for rows in 'mask' and columns in 'selcols'
@@ -161,13 +153,20 @@ town name, county, population, town surface in
 
     > head(pop_sel)
 
-         Codi_ine_5_txt     NomMun          Comarca Poblacio_padro Superficie_ha
-    3              8130   Montclar         Berguedà            136     2190.6228
-    4             25145      Nalec           Urgell             88      966.6238
-    1036          43061      Forès Conca de Barberà             48     1614.8126
-    7752           8004     Alpens            Osona            269     1377.8822
-    8140           8131 Montesquiu            Osona           1048      484.3796
-    8154           8132  Montmajor         Berguedà            472     7572.4414
+         Codi_ine_5_txt               NomMun         Comarca Poblacio_padro
+    9481           8001               Abrera  Baix Llobregat          12697
+    9482           8002   Aguilar de Segarra           Bages            287
+    9483           8003               Alella         Maresme          10079
+    9484           8004               Alpens        Lluçanès            281
+    9485           8005 l'Ametlla del Vallès Vallès Oriental           9020
+    9486           8006        Arenys de Mar         Maresme          16155
+         Superficie_ha
+    9481     1997.8648
+    9482     4321.9825
+    9483      961.9331
+    9484     1377.8822
+    9485     1436.2999
+    9486      649.1550
 
 Lists and implicit looping
 ==========================
@@ -184,7 +183,7 @@ values we want to group and a second argument with the grouping factor.
 
     > length(pbyc)
 
-    [1] 42
+    [1] 43
 
     > names(pbyc)
 
@@ -194,45 +193,46 @@ values we want to group and a second argument with the grouping factor.
     [10] "Baix Empordà"      "Baix Llobregat"    "Baix Penedès"     
     [13] "Barcelonès"        "Berguedà"          "Cerdanya"         
     [16] "Conca de Barberà"  "Garraf"            "Garrigues"        
-    [19] "Garrotxa"          "Gironès"           "Maresme"          
-    [22] "Moianès"           "Montsià"           "Noguera"          
-    [25] "Osona"             "Pallars Jussà"     "Pallars Sobirà"   
-    [28] "Pla d'Urgell"      "Pla de l'Estany"   "Priorat"          
-    [31] "Ribera d'Ebre"     "Ripollès"          "Segarra"          
-    [34] "Segrià"            "Selva"             "Solsonès"         
-    [37] "Tarragonès"        "Terra Alta"        "Urgell"           
-    [40] "Val d'Aran"        "Vallès Occidental" "Vallès Oriental"  
+    [19] "Garrotxa"          "Gironès"           "Lluçanès"         
+    [22] "Maresme"           "Moianès"           "Montsià"          
+    [25] "Noguera"           "Osona"             "Pallars Jussà"    
+    [28] "Pallars Sobirà"    "Pla d'Urgell"      "Pla de l'Estany"  
+    [31] "Priorat"           "Ribera d'Ebre"     "Ripollès"         
+    [34] "Segarra"           "Segrià"            "Selva"            
+    [37] "Solsonès"          "Tarragonès"        "Terra Alta"       
+    [40] "Urgell"            "Val d'Aran"        "Vallès Occidental"
+    [43] "Vallès Oriental"  
 
     > head(pbyc)
 
     $`Alt Camp`
-     [1]   960  5185   478   695  1230   336   198   283   191   397   169   516
-    [13]  2340   493  1196   544   575   507   402  1793 24553   705  1299
+     [1]   961  5290   496   687  1254   332   196   285   189   419   173   541
+    [13]  2340   492  1199   572   552   506   395  1882 24727   711  1341
 
     $`Alt Empordà`
-     [1]   267   178   205   885   619   998  1657    88  1015   752   271   941
-    [13]   266  2820   305   618 11154   282   179   462   540 10497   412 47043
-    [25]   793   464   909  3340   845  4842  1252   284   729   197  1434   369
-    [37]   111  1490   588   187  1945   518   264  1095  1010   206   244 19921
-    [49]   712   399   755   157  2083   378   865   212   334   726   914   969
-    [61]   471  5480   162  1124   371  1154   761   244
+     [1]   903   180   625  1043  1676    87  1034   776   258   949   279  2889
+    [13]   330   672 11611   307   178   468   535 10520   408 47088   778   458
+    [25]   922  3317   827  4905  1245   294   724   202  1465   373   115  1472
+    [37]   579   181  1974   542   274  1090  1015   210   244 19907   696   267
+    [49]   808   159  2079   379   865   220   345   741   911   991   479  5562
+    [61]   162  1142   386  1166   204   401   785   249
 
     $`Alt Penedès`
-     [1]  1597  1440  7723  2207  2419  3847  1923   915  1306   523   551  1004
-    [13]  2459  3286  2411  2367 12840   378  7664  3149  1429  2479  1128 39969
-    [25]  1701  1005  2452
+     [1]  1706   999  2474  1614  1446  7814  2207  2517  3884  2016   935  1335
+    [13]   507   555  1009  2503  3313  2404  2393 12863   370  7624  3241  1457
+    [25]  2557  1130 40056
 
     $`Alt Urgell`
-     [1]   322   174    85   224    94    46   548   129  1081  1857   766   348
-    [13]   947 12252   800   260   264   156   100
+     [1]   329   163    80   223    98    51   548   128  1083  1849   796   348
+    [13]   920 12261   794   274   266   166   105
 
     $`Alta Ribagorça`
-    [1] 1060 2331  554
+    [1] 1090 2336  532
 
     $Anoia
-     [1]   653   322 40875   825   917  9623   158  3681   154 16411  3064  2207
-    [13]   551   206   236   159  1236   344 10192   129  3852  1375   179 12736
-    [25]   220    73  2177  1521  3597   194  5314   768   163
+     [1]   216    74  2218  1606  3590   195  5344   754   159   636   333 40767
+    [13]   806   942  9744   166  3728   159 16787  3127  2275   554   204   244
+    [25]   167  1243   361 10294   138  3966  1387   182 12699
 
 Grouping values can be useful in data analysis when we want to examine
 the data separately by groups. Let’s say we want to visualize the
@@ -263,14 +263,14 @@ of the list:
 
     > mean(pbyc[["Terra Alta"]])
 
-    [1] 950.0833
+    [1] 950.6667
 
 Now, let’s compare it with the mean municipality population for
 *Urgell*:
 
     > mean(pbyc$Urgell)
 
-    [1] 1863.8
+    [1] 1872.35
 
 It would be tedious to do that calculation for each different county by
 writing one such function call for each element of the list. As an
@@ -296,27 +296,27 @@ following call to the `sapply()` function:
     > sapply(pbyc, mean)
 
              Alt Camp       Alt Empordà       Alt Penedès        Alt Urgell 
-            1958.4783         2114.1471         4080.4444         1076.4737 
+            1980.0000         2131.2647         4108.4815         1078.0000 
        Alta Ribagorça             Anoia             Bages         Baix Camp 
-            1315.0000         3760.9697         6032.0667         6967.7857 
+            1319.3333         3789.8485         6215.9310         7054.4643 
             Baix Ebre      Baix Empordà    Baix Llobregat      Baix Penedès 
-            5622.9286         3813.0000        27777.0667         7888.5000 
+            5688.2857         3847.6944        27784.6667         8032.8571 
            Barcelonès          Berguedà          Cerdanya  Conca de Barberà 
-          456193.4000         1290.4516         1131.1765          913.8182 
+          456008.4000         1299.3226         1143.7059          917.0909 
                Garraf         Garrigues          Garrotxa           Gironès 
-           25710.6667          792.0833         2817.2857         7027.4286 
-              Maresme           Moianès           Montsià           Noguera 
-           15320.8333         1424.3000         5699.7500         1305.6333 
-                Osona     Pallars Jussà    Pallars Sobirà      Pla d'Urgell 
-            3281.5400          940.7143          473.4000         2298.0625 
-      Pla de l'Estany           Priorat     Ribera d'Ebre          Ripollès 
-            2988.7273          401.6957         1561.7143         1339.4211 
-              Segarra            Segrià             Selva          Solsonès 
-            1114.8571         5568.6579         6757.7692          906.6667 
-           Tarragonès        Terra Alta            Urgell        Val d'Aran 
-           11909.1364          950.0833         1863.8000         1152.4444 
-    Vallès Occidental   Vallès Oriental 
-           40757.4783        10661.2564 
+           26132.3333          792.1250         2845.2381         7092.2143 
+             Lluçanès           Maresme           Moianès           Montsià 
+             688.5556        15407.1000         1442.8000         5728.6667 
+              Noguera             Osona     Pallars Jussà    Pallars Sobirà 
+            1309.9000         3801.0238          942.7857          478.7333 
+         Pla d'Urgell   Pla de l'Estany           Priorat     Ribera d'Ebre 
+            2315.3125         2994.6364          401.6522         1565.7143 
+             Ripollès           Segarra            Segrià             Selva 
+            1342.6316         1168.1579         5589.1579         6828.5385 
+             Solsonès        Tarragonès        Terra Alta            Urgell 
+             884.5882        11974.0000          950.6667         1872.3500 
+           Val d'Aran Vallès Occidental   Vallès Oriental 
+            1140.8889        40907.8696        10706.2308 
 
 **Exercise:** calculate the total population per county and the total
 population in Catalonia.
@@ -334,10 +334,10 @@ particular order:
 By default, these functions return an ascending order, but by setting
 the argument `decreasing=TRUE`, we can obtain a descending order.
 
-**Exercise:** Using the previous functions `sort()` and `order()` and
-the columns `NomMun` (town name) and `Poblacio_padro` (town population),
-find out how many inhabitants have the three most and three least
-populated municipalities and their names.
+**Exercise:** Using one of the previous functions, `sort()` or
+`order()`, and the columns `NomMun` (town name) and `Poblacio_padro`
+(town population), find out how many inhabitants have the three most and
+three least populated municipalities and their names.
 
 Adding new columns
 ==================
@@ -360,20 +360,20 @@ to `pop_sel` as a new column called `density`:
     > pop_sel$Density <- pop_sel$Poblacio_padro / km2
     > head(pop_sel)
 
-         Codi_ine_5_txt     NomMun          Comarca Poblacio_padro Superficie_ha
-    3              8130   Montclar         Berguedà            136     2190.6228
-    4             25145      Nalec           Urgell             88      966.6238
-    1036          43061      Forès Conca de Barberà             48     1614.8126
-    7752           8004     Alpens            Osona            269     1377.8822
-    8140           8131 Montesquiu            Osona           1048      484.3796
-    8154           8132  Montmajor         Berguedà            472     7572.4414
-            Density
-    3      6.208280
-    4      9.103852
-    1036   2.972481
-    7752  19.522714
-    8140 216.359236
-    8154   6.233128
+         Codi_ine_5_txt               NomMun         Comarca Poblacio_padro
+    9481           8001               Abrera  Baix Llobregat          12697
+    9482           8002   Aguilar de Segarra           Bages            287
+    9483           8003               Alella         Maresme          10079
+    9484           8004               Alpens        Lluçanès            281
+    9485           8005 l'Ametlla del Vallès Vallès Oriental           9020
+    9486           8006        Arenys de Mar         Maresme          16155
+         Superficie_ha     Density
+    9481     1997.8648  635.528490
+    9482     4321.9825    6.640471
+    9483      961.9331 1047.785963
+    9484     1377.8822   20.393616
+    9485     1436.2999  628.002550
+    9486      649.1550 2488.619821
 
 Let’s say we want to visualize the relationship between population
 density and absolute population, highlighting the two municipalities
@@ -494,8 +494,8 @@ be use to combine both datasets.
 
     > head(pop_sel$NomMun)
 
-    [1] "Montclar"   "Nalec"      "Forès"      "Alpens"     "Montesquiu"
-    [6] "Montmajor" 
+    [1] "Abrera"               "Aguilar de Segarra"   "Alella"              
+    [4] "Alpens"               "l'Ametlla del Vallès" "Arenys de Mar"       
 
 However, in the first dataset the name of the municipalities is all in
 uppercase, while in the second is a combination of upper and lower
@@ -516,13 +516,13 @@ However, both datasets also have a column with a municipality code:
 
     > head(pop_sel$Codi_ine_5_txt)
 
-    [1]  8130 25145 43061  8004  8131  8132
+    [1] 8001 8002 8003 8004 8005 8006
 
     > mt <- match(vac_admin$MUNICIPI_CODI, pop_sel$Codi_ine_5_txt)
     > head(mt, n=20)
 
-     [1] 431 247 252 631 804 902 907 647  86 328 213 112 784 918  93 218 676 854 372
-    [20] 676
+     [1] 480 292 297 683 857  14  18 699 136 376 261 161 837  29 143 265 729 906 421
+    [20] 729
 
 Once we know what column in each dataset can be used to combine them, we
 can use the `merge()` function, which by default will return only rows
@@ -555,19 +555,19 @@ using the arguments `by.x` and `by.y`.
     5 BAIX LLOBREGAT   ABRERA             NA No classificat    2 15/09/2021
     6 BAIX LLOBREGAT   ABRERA             NA No classificat    1 31/03/2021
                  FABRICANT NO_VACUNAT RECOMPTE NomMun        Comarca Poblacio_padro
-    1        J&J / Janssen                  19 Abrera Baix Llobregat          12620
-    2    BioNTech / Pfizer                   4 Abrera Baix Llobregat          12620
-    3    BioNTech / Pfizer                   1 Abrera Baix Llobregat          12620
-    4 Oxford / AstraZeneca                   9 Abrera Baix Llobregat          12620
-    5    BioNTech / Pfizer                   3 Abrera Baix Llobregat          12620
-    6      Moderna / Lonza                   1 Abrera Baix Llobregat          12620
+    1        J&J / Janssen                  19 Abrera Baix Llobregat          12697
+    2    BioNTech / Pfizer                   4 Abrera Baix Llobregat          12697
+    3    BioNTech / Pfizer                   1 Abrera Baix Llobregat          12697
+    4 Oxford / AstraZeneca                   9 Abrera Baix Llobregat          12697
+    5    BioNTech / Pfizer                   3 Abrera Baix Llobregat          12697
+    6      Moderna / Lonza                   1 Abrera Baix Llobregat          12697
       Superficie_ha  Density
-    1      1995.254 632.5011
-    2      1995.254 632.5011
-    3      1995.254 632.5011
-    4      1995.254 632.5011
-    5      1995.254 632.5011
-    6      1995.254 632.5011
+    1      1997.865 635.5285
+    2      1997.865 635.5285
+    3      1997.865 635.5285
+    4      1997.865 635.5285
+    5      1997.865 635.5285
+    6      1997.865 635.5285
 
 Now the number of rows of the output data frame `vac_pop_merge` is
 slightly smaller than `vac_admin`, because it doesn’t keep rows that

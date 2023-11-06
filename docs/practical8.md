@@ -1,7 +1,7 @@
 ---
 layout: page
 title: Practical 8
-lastupdate: November 9th, 2022
+lastupdate: November 6th, 2023
 permalink: /practical8/
 use_math : true
 ---

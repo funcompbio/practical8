@@ -394,9 +394,10 @@ $Anoia
 5      1997.865 635.5285
 6      1997.865 635.5285</code></pre>
 <p>Now the number of rows of the output data frame <code>vac_pop_merge</code> is slightly smaller than <code>vac_admin</code>, because it doesn’t keep rows that didn’t find a match in <code>pop_sel</code>.</p>
-<p><strong>Exercise:</strong> Using <code>vac_pop_merge</code>, add a new column named <code>doses_100K_h</code> containing how many vaccine doses were administered each day per 100,000 inhabitants. The column <code>RECOMPTE</code> contains the number of administered doses. Which towns administered the highest and the lowest rate of vaccine doses per 100,000 inhabitants, from what vaccine manufacturer and at which date.</p>
+<p><strong>Exercise:</strong> Using <code>vac_pop_merge</code>, add a new column named <code>doses_100K_h</code> containing how many vaccine doses were administered each day per 100,000 inhabitants. The column <code>RECOMPTE</code> contains the number of administered doses. Which towns administered the highest and the lowest rate of vaccine doses per 100,000 inhabitants, from what vaccine manufacturer and at which date?</p>
 <p>To continue with our analysis, we need to add a column containing a month as a factor. Thus, we repeat the steps explained in the previous <a href="/practical7/">practical 7</a> to convert the column <code>DATA</code> to a date, extract the months and convert them to a factor with ordered levels:</p>
-<pre><code>&gt; vac_pop_merge$month &lt;- months(as.Date(vac_pop_merge$DATA), abbreviate=TRUE)
+<pre><code>&gt; vac_pop_merge$month &lt;- months(as.Date(vac_pop_merge$DATA, &quot;%d/%m/%Y&quot;),
++                               abbreviate=TRUE)
 &gt; vac_pop_merge$month &lt;- factor(vac_pop_merge$month,
 +                               levels=c(&quot;Jan&quot;, &quot;Feb&quot;, &quot;Mar&quot;, &quot;Apr&quot;, &quot;May&quot;, &quot;Jun&quot;,
 +                                        &quot;Jul&quot;, &quot;Aug&quot;, &quot;Sep&quot;, &quot;Oct&quot;, &quot;Nov&quot;, &quot;Dec&quot;))</code></pre>

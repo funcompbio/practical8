@@ -328,7 +328,7 @@ a match in `pop_sel`.
 containing how many vaccine doses were administered each day per 100,000
 inhabitants. The column `RECOMPTE` contains the number of administered doses.
 Which towns administered the highest and the lowest rate of vaccine doses
-per 100,000 inhabitants, from what vaccine manufacturer and at which date.
+per 100,000 inhabitants, from what vaccine manufacturer and at which date?
 
 ```{r, include=FALSE}
 vac_pop_merge$doses_100K_h <- 100000 * vac_pop_merge$RECOMPTE / vac_pop_merge$Poblacio_padro
@@ -342,7 +342,8 @@ a factor. Thus, we repeat the steps explained in the previous
 months and convert them to a factor with ordered levels:
 
 ```{r}
-vac_pop_merge$month <- months(as.Date(vac_pop_merge$DATA), abbreviate=TRUE)
+vac_pop_merge$month <- months(as.Date(vac_pop_merge$DATA, "%d/%m/%Y"),
+                              abbreviate=TRUE)
 vac_pop_merge$month <- factor(vac_pop_merge$month,
                               levels=c("Jan", "Feb", "Mar", "Apr", "May", "Jun",
                                        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"))

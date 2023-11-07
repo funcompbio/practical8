@@ -578,14 +578,15 @@ didn’t find a match in `pop_sel`.
 day per 100,000 inhabitants. The column `RECOMPTE` contains the number
 of administered doses. Which towns administered the highest and the
 lowest rate of vaccine doses per 100,000 inhabitants, from what vaccine
-manufacturer and at which date.
+manufacturer and at which date?
 
 To continue with our analysis, we need to add a column containing a
 month as a factor. Thus, we repeat the steps explained in the previous
 [practical 7](/practical7/) to convert the column `DATA` to a date,
 extract the months and convert them to a factor with ordered levels:
 
-    > vac_pop_merge$month <- months(as.Date(vac_pop_merge$DATA), abbreviate=TRUE)
+    > vac_pop_merge$month <- months(as.Date(vac_pop_merge$DATA, "%d/%m/%Y"),
+    +                               abbreviate=TRUE)
     > vac_pop_merge$month <- factor(vac_pop_merge$month,
     +                               levels=c("Jan", "Feb", "Mar", "Apr", "May", "Jun",
     +                                        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"))

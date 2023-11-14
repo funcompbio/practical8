@@ -617,11 +617,12 @@ in “High population”) used for extracting this values.
 **Exercise**: Create a data frame named `df_low` that contains the total
 doses per 100,000 inhabitants administered per month in municipalities
 with population smaller than 1,000 inhabitants. Make a bar plot showing
-the administered doses per inhabitant per month, as we did above.
+the administered doses per 100,000 inhabitants per month, as we did
+above.
 
 **Exercise**: Combine the data frames `df_high` and `df_low` into a
 single data frame named `df_months` (**Hint**: Make sure that `df_high`
 and `df_low` have the same columns, with the same name and in the same
 order). Then make a box plot showing the distribution of doses per
-inhabitant grouped by the type of municipality (low or high). Do you see
-any difference?
+100,000 inhabitants grouped by the type of municipality (low or high).
+Do you see any difference?

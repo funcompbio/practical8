@@ -32,10 +32,13 @@ next two steps:
         [link](Vacunaci__per_al_COVID-19__dosis_administrades_per_municipi.zip).
         Once downloaded, you will have to uncompress it to obtain the
         CSV file using the instruction:
-        `$ unzip Vacunaci__per_al_COVID-19__dosis_administrades_per_municipi.zip`
+
+            $ unzip Vacunaci__per_al_COVID-19__dosis_administrades_per_municipi.zip
+
     2.  Make a directory in your filesystem, for instance at your *home*
         directory, called `practical8` and copy in it the downloaded
         file.
+
     3.  **Change the name of the file you just downloaded to
         `dosis_municipi.csv`**, so that you finally have a file called
         `dosis_municipi.csv` in the directory `practical8`.

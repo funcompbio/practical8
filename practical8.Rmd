@@ -44,6 +44,7 @@ steps:
       [link](Vacunaci__per_al_COVID-19__dosis_administrades_per_municipi.zip).
       Once downloaded, you will have to uncompress it to obtain the CSV file using
       the instruction:
+
       ```
       $ unzip Vacunaci__per_al_COVID-19__dosis_administrades_per_municipi.zip
       ```

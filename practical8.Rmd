@@ -88,15 +88,15 @@ table(pop$Any)
 ```
 
 We can observe that this dataset contains data from different years. To continue
-with our analysis, we will select the most recent data corresponding to 2022 and,
+with our analysis, we will select the most recent data corresponding to 2023 and,
 moreover, we will only keep the columns `Codi_ine_5_txt` (identifier for the
 municipality), `NomMun`, `Comarca`, `Poblacio_padro` and `Superficie_ha`,
 corresponding to town identifier, town name, county, population, town surface in
 [hectare](https://en.wikipedia.org/wiki/Hectare) (ha), respectively.
 
 ```{r}
-## build a logical mask to select for year 2022
-mask <- pop$Any == 2022
+## build a logical mask to select for year 2023
+mask <- pop$Any == 2023
 ## build a character string vector of the selected columns
 selcols <- c("Codi_ine_5_txt", "NomMun", "Comarca", "Poblacio_padro", "Superficie_ha")
 ## subset the data.frame object 'pop' for rows in 'mask' and columns in 'selcols'
@@ -191,7 +191,7 @@ We have two functions in R that allow us to rearrange values in particular order
 By default, these functions return an ascending order, but by setting the argument
 `decreasing=TRUE`, we can obtain a descending order.
 
-**Exercise:** Using one of the previous functions, `sort()` or `order()`, and
+**Exercise:** Using **one** of the previous functions, `sort()` or `order()`, and
 the columns `NomMun` (town name) and `Poblacio_padro` (town population), find
 out how many inhabitants have the three most and three least populated
 municipalities and their names.
@@ -248,7 +248,7 @@ corresponding to the administered COVID19 vaccine doses by municipality
 in Catalonia (`dosis_municipi.csv`) as follows.
 
 ```{r}
-vac <- read.csv("dosis_municipi.csv", sep=";", stringsAsFactors=FALSE)
+vac <- read.csv("dosis_municipi.csv")
 dim(vac)
 head(vac)
 ```
@@ -270,9 +270,7 @@ dim(vac_admin)
 We want to combine the filtered vaccination data with the population data.
 
 ```{r}
-dim(vac_admin)
 colnames(vac_admin)
-
 dim(pop_sel)
 colnames(pop_sel)
 ```
@@ -324,16 +322,18 @@ Now the number of rows of the output data frame `vac_pop_merge` is slightly
 smaller than `vac_admin`, because it doesn't keep rows that didn't find
 a match in `pop_sel`.
 
-**Exercise:** Using `vac_pop_merge`, add a new column named `doses_100K_h` 
+**Exercise:** Using `vac_pop_merge`, add a new column named `doses100K` 
 containing how many vaccine doses were administered each day per 100,000
 inhabitants. The column `RECOMPTE` contains the number of administered doses.
+If you are unsure how to calculate the number of vaccine doses per 100,000
+inhabitants, check [lecture 7](/lecture7/#22).
 Which towns administered the highest and the lowest rate of vaccine doses
 per 100,000 inhabitants, from what vaccine manufacturer and at which date?
 
 ```{r, include=FALSE}
-vac_pop_merge$doses_100K_h <- 100000 * vac_pop_merge$RECOMPTE / vac_pop_merge$Poblacio_padro
-head(vac_pop_merge[order(vac_pop_merge$doses_100K_h, decreasing = TRUE),])
-tail(vac_pop_merge[order(vac_pop_merge$doses_100K_h, decreasing = TRUE),])
+vac_pop_merge$doses100K <- 100000 * vac_pop_merge$RECOMPTE / vac_pop_merge$Poblacio_padro
+head(vac_pop_merge[order(vac_pop_merge$doses100K, decreasing = TRUE),])
+tail(vac_pop_merge[order(vac_pop_merge$doses100K, decreasing = TRUE),])
 ```
 
 To continue with our analysis, we need to add a column containing a month as 
@@ -348,19 +348,19 @@ vac_pop_merge$month <- factor(vac_pop_merge$month,
                               levels=c("Jan", "Feb", "Mar", "Apr", "May", "Jun",
                                        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"))
 ```
-
-Next, we will select the towns with high population (more than 200,000
-residents) and save them into a data frame called `vac_high`. Now we want to 
-obtain the total vaccine doses administered per inhabitant every month in these
-specific towns. Again, we take advantege of the combination of `split` and 
-`sapply` to do this calculation. Finally, we create a new data frame with the
+More highly populated towns provide more robust estimates of vaccination rate.
+For this reason, we will select the towns with high population (more than
+200,000 inhabitants) and save them into a data frame called `vac_high`. Now we
+want to obtain the total vaccine doses administered per inhabitant every month
+in these specific towns. Again, we take advantage of the combination of `split`
+and `sapply` to do this calculation. Finally, we create a new data frame with the
 summarised data, including a column called `muni_type` that identifies the 
 type of municipalities ("High" as in "High population") used for extracting
 this values.
 
 ```{r barplotDosesHighPop}
 vac_high <- vac_pop_merge[vac_pop_merge$Poblacio_padro > 200000,]
-dosesh_high <- split(vac_high$doses_100K_h, vac_high$month)
+dosesh_high <- split(vac_high$doses100K, vac_high$month)
 
 total_dosesh_high <- sapply(dosesh_high, sum)
 
@@ -379,8 +379,8 @@ smaller than 1,000 inhabitants. Make a bar plot showing the administered doses p
 100,000 inhabitants per month, as we did above.
 
 ```{r barplotDosesLowPop, include = FALSE}
-vac_low <- vac_pop_merge[vac_pop_merge$Poblacio_padro < 1e3,]
-dosesh_low <- split(vac_low$doses_100K_h, vac_low$month)
+vac_low <- vac_pop_merge[vac_pop_merge$Poblacio_padro < 1000,]
+dosesh_low <- split(vac_low$doses100K, vac_low$month)
 
 total_dosesh_low <- sapply(dosesh_low, sum)
 

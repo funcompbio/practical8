@@ -8,28 +8,63 @@
 <li>Learn to explore and visualize data in different ways.</li>
 </ul>
 <h1 id="setup-and-background">Setup and background</h1>
-<p>To do this practical you need an installation of R and RStudio. You can find the instructions in the <a href="/setup#r-and-rstudio">setup</a> link on how to install R and RStudio in your system. For a smooth development of this practical, it is strongly recommended that you follow and finish the previous <a href="/practical7/">practical 7</a>.</p>
-<p>We will download COVID19 vaccination and demographic data for Catalonia to illustrate some data wrangling in R and RStudio. Please follow the next two steps:</p>
+<p>To do this practical you need an installation of R and RStudio. You
+can find the instructions in the <a
+href="/setup#r-and-rstudio">setup</a> link on how to install R and
+RStudio in your system. For a smooth development of this practical, it
+is strongly recommended that you follow and finish the previous <a
+href="/practical7/">practical 7</a>.</p>
+<p>We will download COVID19 vaccination and demographic data for
+Catalonia to illustrate some data wrangling in R and RStudio. Please
+follow the next two steps:</p>
 <ul>
 <li><p><strong>COVID19 vaccination by municipality</strong>:</p>
 <ol type="1">
-<li><p>We will download the COVID19 vaccination data by municipality from the <a href="https://analisi.transparenciacatalunya.cat/Salut/Vacunaci-per-al-COVID-19-dosis-administrades-per-m/irki-p3c7">open data portal</a>. However, this data portal provides the data as an uncompressed CSV file of over 100MB large, which may take few minutes to download. You can download a compressed ZIP version of this file from this <a href="Vacunaci__per_al_COVID-19__dosis_administrades_per_municipi.zip">link</a>. Once downloaded, you will have to uncompress it to obtain the CSV file using the instruction:</p>
-<pre><code>$ unzip Vacunaci__per_al_COVID-19__dosis_administrades_per_municipi.zip</code></pre></li>
-<li>Make a directory in your filesystem, for instance at your <em>home</em> directory, called <code>practical8</code> and copy in it the downloaded file.</li>
-<li><p><strong>Change the name of the file you just downloaded to <code>dosis_municipi.csv</code></strong>, so that you finally have a file called <code>dosis_municipi.csv</code> in the directory <code>practical8</code>.</p></li>
+<li>We will download the COVID19 vaccination data by municipality from
+the <a
+href="https://analisi.transparenciacatalunya.cat/Salut/Vacunaci-per-al-COVID-19-dosis-administrades-per-m/irki-p3c7">open
+data portal</a>. However, this data portal provides the data as an
+uncompressed CSV file of over 100MB large, which may take few minutes to
+download. You can download a compressed ZIP version of this file from
+this <a
+href="Vacunaci__per_al_COVID-19__dosis_administrades_per_municipi.zip">link</a>.
+Once downloaded, you will have to uncompress it to obtain the CSV file
+using the instruction:
+<code>$ unzip Vacunaci__per_al_COVID-19__dosis_administrades_per_municipi.zip</code></li>
+<li>Make a directory in your filesystem, for instance at your
+<em>home</em> directory, called <code>practical8</code> and copy in it
+the downloaded file.</li>
+<li><strong>Change the name of the file you just downloaded to
+<code>dosis_municipi.csv</code></strong>, so that you finally have a
+file called <code>dosis_municipi.csv</code> in the directory
+<code>practical8</code>.</li>
 </ol></li>
 <li><p><strong>Population by municipality</strong>:</p>
 <ol type="1">
-<li>Download the Catalan Urbanistic Map dataset at the <a href="https://governobert.gencat.cat/ca/dades_obertes">Dades Obertes de Catalunya</a> data portal. You can either click on the link at the bottom right called “Access the catalog” and then search for “Dades del mapa urbanístic de Catalunya” or directly go to the following <a href="https://analisi.transparenciacatalunya.cat/en/Urbanisme-infraestructures/Dades-del-mapa-urban-stic-de-Catalunya/epsm-zskb">link</a>. Once you are on the page entitled “Dades del mapa urbanístic de Catalunya”, download the data by going to the top right corner and select “Export” and then “CSV”. This dataset includes information of the population of Catalonia by municipality.</li>
-<li>Copy the downloaded file to the <code>practical8</code> directory and <strong>change its name to <code>poblacio_municipis.csv</code></strong>.</li>
+<li>Download the Catalan Urbanistic Map dataset at the <a
+href="https://governobert.gencat.cat/ca/dades_obertes">Dades Obertes de
+Catalunya</a> data portal. You can either click on the link at the
+bottom right called “Access the catalog” and then search for “Dades del
+mapa urbanístic de Catalunya” or directly go to the following <a
+href="https://analisi.transparenciacatalunya.cat/en/Urbanisme-infraestructures/Dades-del-mapa-urban-stic-de-Catalunya/epsm-zskb">link</a>.
+Once you are on the page entitled “Dades del mapa urbanístic de
+Catalunya”, download the data by going to the top right corner and
+select “Export” and then “CSV”. This dataset includes information of the
+population of Catalonia by municipality.</li>
+<li>Copy the downloaded file to the <code>practical8</code> directory
+and <strong>change its name to
+<code>poblacio_municipis.csv</code></strong>.</li>
 </ol></li>
 </ul>
 <h1 id="reading-and-filtering-data">Reading and filtering data</h1>
-<p>Let’s load the CSV file <code>poblacio_municipis.csv</code>, which contains some demographic indicators for the 948 municipalities in Catalonia such as the population (column <code>Poblacio_padro</code>).</p>
+<p>Let’s load the CSV file <code>poblacio_municipis.csv</code>, which
+contains some demographic indicators for the 948 municipalities in
+Catalonia such as the population (column
+<code>Poblacio_padro</code>).</p>
 <pre><code>&gt; pop &lt;- read.csv(&quot;poblacio_municipis.csv&quot;)
 &gt; dim(pop)
 
-[1] 10428    69
+[1] 11376    69
 
 &gt; head(pop, n=3)
 
@@ -89,11 +124,19 @@
 &gt; table(pop$Any)
 
 
-2012 2013 2014 2015 2016 2017 2018 2019 2020 2021 2022 
- 948  948  948  948  948  948  948  948  948  948  948 </code></pre>
-<p>We can observe that this dataset contains data from different years. To continue with our analysis, we will select the most recent data corresponding to 2022 and, moreover, we will only keep the columns <code>Codi_ine_5_txt</code> (identifier for the municipality), <code>NomMun</code>, <code>Comarca</code>, <code>Poblacio_padro</code> and <code>Superficie_ha</code>, corresponding to town identifier, town name, county, population, town surface in <a href="https://en.wikipedia.org/wiki/Hectare">hectare</a> (ha), respectively.</p>
-<pre><code>&gt; ## build a logical mask to select for year 2022
-&gt; mask &lt;- pop$Any == 2022
+2012 2013 2014 2015 2016 2017 2018 2019 2020 2021 2022 2023 
+ 948  948  948  948  948  948  948  948  948  948  948  948 </code></pre>
+<p>We can observe that this dataset contains data from different years.
+To continue with our analysis, we will select the most recent data
+corresponding to 2023 and, moreover, we will only keep the columns
+<code>Codi_ine_5_txt</code> (identifier for the municipality),
+<code>NomMun</code>, <code>Comarca</code>, <code>Poblacio_padro</code>
+and <code>Superficie_ha</code>, corresponding to town identifier, town
+name, county, population, town surface in <a
+href="https://en.wikipedia.org/wiki/Hectare">hectare</a> (ha),
+respectively.</p>
+<pre><code>&gt; ## build a logical mask to select for year 2023
+&gt; mask &lt;- pop$Any == 2023
 &gt; ## build a character string vector of the selected columns
 &gt; selcols &lt;- c(&quot;Codi_ine_5_txt&quot;, &quot;NomMun&quot;, &quot;Comarca&quot;, &quot;Poblacio_padro&quot;, &quot;Superficie_ha&quot;)
 &gt; ## subset the data.frame object &#39;pop&#39; for rows in &#39;mask&#39; and columns in &#39;selcols&#39;
@@ -104,22 +147,26 @@
 
 &gt; head(pop_sel)
 
-     Codi_ine_5_txt               NomMun         Comarca Poblacio_padro
-9481           8001               Abrera  Baix Llobregat          12697
-9482           8002   Aguilar de Segarra           Bages            287
-9483           8003               Alella         Maresme          10079
-9484           8004               Alpens        Lluçanès            281
-9485           8005 l&#39;Ametlla del Vallès Vallès Oriental           9020
-9486           8006        Arenys de Mar         Maresme          16155
-     Superficie_ha
-9481     1997.8648
-9482     4321.9825
-9483      961.9331
-9484     1377.8822
-9485     1436.2999
-9486      649.1550</code></pre>
+      Codi_ine_5_txt               NomMun         Comarca Poblacio_padro
+10429           8001               Abrera  Baix Llobregat          12848
+10430           8002   Aguilar de Segarra           Bages            294
+10431           8003               Alella         Maresme          10139
+10432           8004               Alpens        Lluçanès            273
+10433           8005 l&#39;Ametlla del Vallès Vallès Oriental           9296
+10434           8006        Arenys de Mar         Maresme          16342
+      Superficie_ha
+10429     1997.8648
+10430     4321.9825
+10431      961.9331
+10432     1377.8822
+10433     1436.2999
+10434      649.1550</code></pre>
 <h1 id="lists-and-implicit-looping">Lists and implicit looping</h1>
-<p>Lists allow one to group values through their elements. Let’s say we want to group the population number by county. We can do that using the function <code>split()</code> to which we should give a first argument of the values we want to group and a second argument with the grouping factor.</p>
+<p>Lists allow one to group values through their elements. Let’s say we
+want to group the population number by county. We can do that using the
+function <code>split()</code> to which we should give a first argument
+of the values we want to group and a second argument with the grouping
+factor.</p>
 <pre><code>&gt; pbyc &lt;- split(pop_sel$Poblacio_padro, pop_sel$Comarca)
 &gt; class(pbyc)
 
@@ -150,106 +197,162 @@
 &gt; head(pbyc)
 
 $`Alt Camp`
- [1]   961  5290   496   687  1254   332   196   285   189   419   173   541
-[13]  2340   492  1199   572   552   506   395  1882 24727   711  1341
+ [1]   974  5278   508   693  1282   337   198   296   181   435   183   544
+[13]  2395   490  1215   584   572   526   385  1942 25014   723  1362
 
 $`Alt Empordà`
- [1]   903   180   625  1043  1676    87  1034   776   258   949   279  2889
-[13]   330   672 11611   307   178   468   535 10520   408 47088   778   458
-[25]   922  3317   827  4905  1245   294   724   202  1465   373   115  1472
-[37]   579   181  1974   542   274  1090  1015   210   244 19907   696   267
-[49]   808   159  2079   379   865   220   345   741   911   991   479  5562
-[61]   162  1142   386  1166   204   401   785   249
+ [1]   923   171   612  1061  1681    98  1059   797   262   941   276  2912
+[13]   325   668 11731   298   186   479   546 10478   409 47879   786   463
+[25]   972  3387   849  4839  1216   299   750   215  1465   393   128  1495
+[37]   555   182  2018   557   281  1066  1045   203   234 20140   679   275
+[49]   833   173  2122   382   872   221   346   768   903   995   488  5642
+[61]   167  1153   379  1188   198   413   785   240
 
 $`Alt Penedès`
- [1]  1706   999  2474  1614  1446  7814  2207  2517  3884  2016   935  1335
-[13]   507   555  1009  2503  3313  2404  2393 12863   370  7624  3241  1457
-[25]  2557  1130 40056
+ [1]  1732   998  2572  1674  1456  7953  2218  2628  3968  2110   909  1317
+[13]   523   571  1026  2572  3380  2462  2407 12945   362  7650  3243  1499
+[25]  2608  1141 40714
 
 $`Alt Urgell`
- [1]   329   163    80   223    98    51   548   128  1083  1849   796   348
-[13]   920 12261   794   274   266   166   105
+ [1]   322   163    77   221    99    44   568   133  1093  1864   797   345
+[13]   938 12568   792   270   255   181   125
 
 $`Alta Ribagorça`
-[1] 1090 2336  532
+[1] 1090 2371  505
 
 $Anoia
- [1]   216    74  2218  1606  3590   195  5344   754   159   636   333 40767
-[13]   806   942  9744   166  3728   159 16787  3127  2275   554   204   244
-[25]   167  1243   361 10294   138  3966  1387   182 12699</code></pre>
-<p>Grouping values can be useful in data analysis when we want to examine the data separately by groups. Let’s say we want to visualize the distribution of the population for the two counties <code>Terra Alta</code> and <code>Urgell</code>, next to each other using a <a href="https://en.wikipedia.org/wiki/Histogram">histogram</a>. We can use the function <code>hist()</code> for that purpose, creating a grid of two plotting panes using the <code>par()</code> function, as follows:</p>
+ [1]   222    72  2268  1665  3566   188  5417   783   162   651   340 41164
+[13]   828   952  9839   198  3720   163 17203  3188  2309   558   219   254
+[25]   162  1268   359 10456   138  4018  1428   179 12758</code></pre>
+<p>Grouping values can be useful in data analysis when we want to
+examine the data separately by groups. Let’s say we want to visualize
+the distribution of the population for the two counties
+<code>Terra Alta</code> and <code>Urgell</code>, next to each other
+using a <a href="https://en.wikipedia.org/wiki/Histogram">histogram</a>.
+We can use the function <code>hist()</code> for that purpose, creating a
+grid of two plotting panes using the <code>par()</code> function, as
+follows:</p>
 <pre><code>&gt; par(mfrow=c(1, 2))
 &gt; hist(pbyc[[&quot;Terra Alta&quot;]], xlab=&quot;Population (inhabitants)&quot;, main=&quot;Terra Alta&quot;)
 &gt; hist(pbyc$Urgell, xlab=&quot;Population (inhabitants)&quot;, main=&quot;Urgell&quot;)</code></pre>
 <p><img src="comptaltaurgell-1.png" /></p>
-<p>Note that in the previous code we are using the double-bracket operator <code>[[</code> instead of the dollar <code>$</code> to access the element <code>Terra Alta</code> because this element has an space character in its name.</p>
-<p><strong>Exercise:</strong> Try to interpret the previous plots, how many municipalities in <em>Urgell</em> and <em>Terra Alta</em> have less than 5,000 inhabitants?</p>
-<p>Now, let’s calculate the mean municipality population for the county of <em>Terra Alta</em>. Having built the previous list object, we can make that calculation applying the function <code>mean()</code> to the corresponding element of the list:</p>
+<p>Note that in the previous code we are using the double-bracket
+operator <code>[[</code> instead of the dollar <code>$</code> to access
+the element <code>Terra Alta</code> because this element has an space
+character in its name.</p>
+<p><strong>Exercise:</strong> Try to interpret the previous plots, how
+many municipalities in <em>Urgell</em> and <em>Terra Alta</em> have less
+than 5,000 inhabitants?</p>
+<p>Now, let’s calculate the mean municipality population for the county
+of <em>Terra Alta</em>. Having built the previous list object, we can
+make that calculation applying the function <code>mean()</code> to the
+corresponding element of the list:</p>
 <pre><code>&gt; mean(pbyc[[&quot;Terra Alta&quot;]])
 
-[1] 950.6667</code></pre>
-<p>Now, let’s compare it with the mean municipality population for <em>Urgell</em>:</p>
+[1] 956</code></pre>
+<p>Now, let’s compare it with the mean municipality population for
+<em>Urgell</em>:</p>
 <pre><code>&gt; mean(pbyc$Urgell)
 
-[1] 1872.35</code></pre>
-<p>It would be tedious to do that calculation for each different county by writing one such function call for each element of the list. As an alternative, we could use a <code>while</code> or <code>for</code> loop that would iterate over the elements of the list. However, R provides a more compact way to iterating over lists, and other objects, by using functions for <em>implicit</em> <a href="https://cran.r-project.org/doc/manuals/r-release/R-lang.html#Looping">looping</a> such as <code>lapply()</code> or <code>sapply()</code>. These functions take a list as a first argument, iterate through each element of that list, and at each iteration apply the function given in the second argument. Additional arguments can be given and will be passed to the <em>applied</em> function.</p>
-<p>The function <code>lapply()</code> returns again the input list with its elements replaced by the result given by the function on each corresponding element, while the function <code>sapply()</code> attempts to simplify the resulting data structure in that if each element of the resulting list has length 1, then it return an atomic vector.</p>
-<p>We can calculate the mean municipality population per county with the following call to the <code>sapply()</code> function:</p>
+[1] 1900.65</code></pre>
+<p>It would be tedious to do that calculation for each different county
+by writing one such function call for each element of the list. As an
+alternative, we could use a <code>while</code> or <code>for</code> loop
+that would iterate over the elements of the list. However, R provides a
+more compact way to iterating over lists, and other objects, by using
+functions for <em>implicit</em> <a
+href="https://cran.r-project.org/doc/manuals/r-release/R-lang.html#Looping">looping</a>
+such as <code>lapply()</code> or <code>sapply()</code>. These functions
+take a list as a first argument, iterate through each element of that
+list, and at each iteration apply the function given in the second
+argument. Additional arguments can be given and will be passed to the
+<em>applied</em> function.</p>
+<p>The function <code>lapply()</code> returns again the input list with
+its elements replaced by the result given by the function on each
+corresponding element, while the function <code>sapply()</code> attempts
+to simplify the resulting data structure in that if each element of the
+resulting list has length 1, then it return an atomic vector.</p>
+<p>We can calculate the mean municipality population per county with the
+following call to the <code>sapply()</code> function:</p>
 <pre><code>&gt; sapply(pbyc, mean)
 
          Alt Camp       Alt Empordà       Alt Penedès        Alt Urgell 
-        1980.0000         2131.2647         4108.4815         1078.0000 
+        2005.0870         2155.1765         4171.7778         1097.6316 
    Alta Ribagorça             Anoia             Bages         Baix Camp 
-        1319.3333         3789.8485         6215.9310         7054.4643 
+        1322.0000         3839.2424         6313.4828         7191.4643 
         Baix Ebre      Baix Empordà    Baix Llobregat      Baix Penedès 
-        5688.2857         3847.6944        27784.6667         8032.8571 
+        5783.8571         3931.1389        28057.7000         8271.5714 
        Barcelonès          Berguedà          Cerdanya  Conca de Barberà 
-      456008.4000         1299.3226         1143.7059          917.0909 
+      463664.2000         1308.9355         1167.5294          928.9091 
            Garraf         Garrigues          Garrotxa           Gironès 
-       26132.3333          792.1250         2845.2381         7092.2143 
+       26523.3333          786.9583         2922.1429         7210.1429 
          Lluçanès           Maresme           Moianès           Montsià 
-         688.5556        15407.1000         1442.8000         5728.6667 
+         700.1111        15597.1333         1469.9000         5835.2500 
           Noguera             Osona     Pallars Jussà    Pallars Sobirà 
-        1309.9000         3801.0238          942.7857          478.7333 
+        1321.6667         3856.8571          955.0000          483.2000 
      Pla d&#39;Urgell   Pla de l&#39;Estany           Priorat     Ribera d&#39;Ebre 
-        2315.3125         2994.6364          401.6522         1565.7143 
+        2341.0000         3019.3636          405.0000         1573.4286 
          Ripollès           Segarra            Segrià             Selva 
-        1342.6316         1168.1579         5589.1579         6828.5385 
+        1352.2105         1186.6316         5663.6579         7040.5769 
          Solsonès        Tarragonès        Terra Alta            Urgell 
-         884.5882        11974.0000          950.6667         1872.3500 
+         886.0000        12274.4545          956.0000         1900.6500 
        Val d&#39;Aran Vallès Occidental   Vallès Oriental 
-        1140.8889        40907.8696        10706.2308 </code></pre>
-<p><strong>Exercise:</strong> calculate the total population per county and the total population in Catalonia.</p>
+        1166.6667        41295.0000        10840.4359 </code></pre>
+<p><strong>Exercise:</strong> calculate the total population per county
+and the total population in Catalonia.</p>
 <h1 id="sorting-and-ordering">Sorting and ordering</h1>
-<p>We have two functions in R that allow us to rearrange values in particular order:</p>
+<p>We have two functions in R that allow us to rearrange values in
+particular order:</p>
 <ul>
 <li><code>sort()</code> returns the ordered values.</li>
-<li><code>order()</code> returns a permutation which rearranges its first argument into ascending or descending order.</li>
+<li><code>order()</code> returns a permutation which rearranges its
+first argument into ascending or descending order.</li>
 </ul>
-<p>By default, these functions return an ascending order, but by setting the argument <code>decreasing=TRUE</code>, we can obtain a descending order.</p>
-<p><strong>Exercise:</strong> Using one of the previous functions, <code>sort()</code> or <code>order()</code>, and the columns <code>NomMun</code> (town name) and <code>Poblacio_padro</code> (town population), find out how many inhabitants have the three most and three least populated municipalities and their names.</p>
+<p>By default, these functions return an ascending order, but by setting
+the argument <code>decreasing=TRUE</code>, we can obtain a descending
+order.</p>
+<p><strong>Exercise:</strong> Using <strong>one</strong> of the previous
+functions, <code>sort()</code> or <code>order()</code>, and the columns
+<code>NomMun</code> (town name) and <code>Poblacio_padro</code> (town
+population), find out how many inhabitants have the three most and three
+least populated municipalities and their names.</p>
 <h1 id="adding-new-columns">Adding new columns</h1>
-<p>In some cases we might be interested in deriving new data columns from the existing ones. For instance, let’s say we want to add a new column to the previous <code>data.frame</code> object <code>pop_sel</code> that stores the population density of each municipality in inhabitants per <a href="https://en.wikipedia.org/wiki/Square_kilometre">squared kilometer (Km2)</a>. The column <code>Superficie_ha</code> contains the area occupied by the municipality in <a href="https://en.wikipedia.org/wiki/Hectare">hectares</a> (ha), let’s convert it first to Km2:</p>
+<p>In some cases we might be interested in deriving new data columns
+from the existing ones. For instance, let’s say we want to add a new
+column to the previous <code>data.frame</code> object
+<code>pop_sel</code> that stores the population density of each
+municipality in inhabitants per <a
+href="https://en.wikipedia.org/wiki/Square_kilometre">squared kilometer
+(Km2)</a>. The column <code>Superficie_ha</code> contains the area
+occupied by the municipality in <a
+href="https://en.wikipedia.org/wiki/Hectare">hectares</a> (ha), let’s
+convert it first to Km2:</p>
 <pre><code>&gt; km2 &lt;- pop_sel$Superficie_ha / 100</code></pre>
-<p>Finally, let’s calculate the population density dividing the number of inhabitants by the area occupied by the municipality in Km2 and add it to <code>pop_sel</code> as a new column called <code>density</code>:</p>
+<p>Finally, let’s calculate the population density dividing the number
+of inhabitants by the area occupied by the municipality in Km2 and add
+it to <code>pop_sel</code> as a new column called
+<code>density</code>:</p>
 <pre><code>&gt; pop_sel$Density &lt;- pop_sel$Poblacio_padro / km2
 &gt; head(pop_sel)
 
-     Codi_ine_5_txt               NomMun         Comarca Poblacio_padro
-9481           8001               Abrera  Baix Llobregat          12697
-9482           8002   Aguilar de Segarra           Bages            287
-9483           8003               Alella         Maresme          10079
-9484           8004               Alpens        Lluçanès            281
-9485           8005 l&#39;Ametlla del Vallès Vallès Oriental           9020
-9486           8006        Arenys de Mar         Maresme          16155
-     Superficie_ha     Density
-9481     1997.8648  635.528490
-9482     4321.9825    6.640471
-9483      961.9331 1047.785963
-9484     1377.8822   20.393616
-9485     1436.2999  628.002550
-9486      649.1550 2488.619821</code></pre>
-<p>Let’s say we want to visualize the relationship between population density and absolute population, highlighting the two municipalities with highest population and density. We can do that using the functions <code>plot()</code> and <code>text()</code> as follows.</p>
+      Codi_ine_5_txt               NomMun         Comarca Poblacio_padro
+10429           8001               Abrera  Baix Llobregat          12848
+10430           8002   Aguilar de Segarra           Bages            294
+10431           8003               Alella         Maresme          10139
+10432           8004               Alpens        Lluçanès            273
+10433           8005 l&#39;Ametlla del Vallès Vallès Oriental           9296
+10434           8006        Arenys de Mar         Maresme          16342
+      Superficie_ha     Density
+10429     1997.8648  643.086559
+10430     4321.9825    6.802434
+10431      961.9331 1054.023403
+10432     1377.8822   19.813014
+10433     1436.2999  647.218593
+10434      649.1550 2517.426501</code></pre>
+<p>Let’s say we want to visualize the relationship between population
+density and absolute population, highlighting the two municipalities
+with highest population and density. We can do that using the functions
+<code>plot()</code> and <code>text()</code> as follows.</p>
 <pre><code>&gt; plot(pop_sel$Poblacio_padro, pop_sel$Density, xlab=&quot;Population (inhabitants)&quot;,
 +      ylab=&quot;Population density&quot;)
 &gt; whmaxpop &lt;- which.max(pop_sel$Poblacio_padro)
@@ -259,10 +362,18 @@ $Anoia
 &gt; text(pop_sel$Poblacio_padro[whmaxden], pop_sel$Density[whmaxden],
 +      pop_sel$NomMun[whmaxden], pos=1)</code></pre>
 <p><img src="popabsvsden-1.png" /></p>
-<p>Note that in the previous code we have used the function <code>which.max()</code> to obtain the position in the input vector that contains the maximum value.</p>
+<p>Note that in the previous code we have used the function
+<code>which.max()</code> to obtain the position in the input vector that
+contains the maximum value.</p>
 <h1 id="combining-data">Combining data</h1>
-<p>One of the most common operations required to answer a question with data is to combine two datasets in some way. Let’s say we want to compare municipalities in terms of how many vaccine doses per 100,000 inhabitants have been administered. For that purpose, we load a second dataset corresponding to the administered COVID19 vaccine doses by municipality in Catalonia (<code>dosis_municipi.csv</code>) as follows.</p>
-<pre><code>&gt; vac &lt;- read.csv(&quot;dosis_municipi.csv&quot;, sep=&quot;;&quot;, stringsAsFactors=FALSE)
+<p>One of the most common operations required to answer a question with
+data is to combine two datasets in some way. Let’s say we want to
+compare municipalities in terms of how many vaccine doses per 100,000
+inhabitants have been administered. For that purpose, we load a second
+dataset corresponding to the administered COVID19 vaccine doses by
+municipality in Catalonia (<code>dosis_municipi.csv</code>) as
+follows.</p>
+<pre><code>&gt; vac &lt;- read.csv(&quot;dosis_municipi.csv&quot;)
 &gt; dim(vac)
 
 [1] 1176958      15
@@ -290,7 +401,8 @@ $Anoia
 4 07/01/2022      Moderna / Lonza                   1
 5 01/04/2021 Oxford / AstraZeneca                   4
 6 31/03/2021    BioNTech / Pfizer                   2</code></pre>
-<p>The column <code>FABRICANT</code> contains the vaccine manufacturer. Let’s tally the number of administered doses per manufacturer.</p>
+<p>The column <code>FABRICANT</code> contains the vaccine manufacturer.
+Let’s tally the number of administered doses per manufacturer.</p>
 <pre><code>&gt; table(vac$FABRICANT)
 
 
@@ -300,18 +412,18 @@ $Anoia
                  368931                  103373                      14 
    Oxford / AstraZeneca 
                  119994 </code></pre>
-<p>The value <code>No administrada</code> corresponds to non-administered vaccine doses. Let’s discard those and work with the corresponding subset of the data in a <code>data.frame</code> object called <code>vac_admin</code>.</p>
+<p>The value <code>No administrada</code> corresponds to
+non-administered vaccine doses. Let’s discard those and work with the
+corresponding subset of the data in a <code>data.frame</code> object
+called <code>vac_admin</code>.</p>
 <pre><code>&gt; mask &lt;- vac$FABRICANT !=&quot;No administrada&quot;
 &gt; vac_admin &lt;- vac[mask, ]
 &gt; dim(vac_admin)
 
 [1] 1073585      15</code></pre>
-<p>We want to combine the filtered vaccination data with the population data.</p>
-<pre><code>&gt; dim(vac_admin)
-
-[1] 1073585      15
-
-&gt; colnames(vac_admin)
+<p>We want to combine the filtered vaccination data with the population
+data.</p>
+<pre><code>&gt; colnames(vac_admin)
 
  [1] &quot;SEXE_CODI&quot;      &quot;SEXE&quot;           &quot;PROVINCIA_CODI&quot; &quot;PROVINCIA&quot;     
  [5] &quot;COMARCA_CODI&quot;   &quot;COMARCA&quot;        &quot;MUNICIPI_CODI&quot;  &quot;MUNICIPI&quot;      
@@ -326,7 +438,11 @@ $Anoia
 
 [1] &quot;Codi_ine_5_txt&quot; &quot;NomMun&quot;         &quot;Comarca&quot;        &quot;Poblacio_padro&quot;
 [5] &quot;Superficie_ha&quot;  &quot;Density&quot;       </code></pre>
-<p>Note that both datasets have different dimensions and different column names, so we need combine them using some column that is common in both datasets. Because our purpose is to compare vaccination rates among municipalities, we should expect that the name of the municipality could be use to combine both datasets.</p>
+<p>Note that both datasets have different dimensions and different
+column names, so we need combine them using some column that is common
+in both datasets. Because our purpose is to compare vaccination rates
+among municipalities, we should expect that the name of the municipality
+could be use to combine both datasets.</p>
 <pre><code>&gt; head(vac_admin$MUNICIPI)
 
 [1] &quot;SANTA LLOGAIA D&#39;ÀLGUEMA&quot; &quot;VALLGORGUINA&quot;           
@@ -337,12 +453,17 @@ $Anoia
 
 [1] &quot;Abrera&quot;               &quot;Aguilar de Segarra&quot;   &quot;Alella&quot;              
 [4] &quot;Alpens&quot;               &quot;l&#39;Ametlla del Vallès&quot; &quot;Arenys de Mar&quot;       </code></pre>
-<p>However, in the first dataset the name of the municipalities is all in uppercase, while in the second is a combination of upper and lower cases. As R compares characters in a case-sensitive manner, we won’t be able to use directly these values to combine the data frames as we can see from the following attempt to match names.</p>
+<p>However, in the first dataset the name of the municipalities is all
+in uppercase, while in the second is a combination of upper and lower
+cases. As R compares characters in a case-sensitive manner, we won’t be
+able to use directly these values to combine the data frames as we can
+see from the following attempt to match names.</p>
 <pre><code>&gt; mt &lt;- match(vac_admin$MUNICIPI, pop_sel$NomMun)
 &gt; head(mt, n=20)
 
  [1] NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA</code></pre>
-<p>However, both datasets also have a column with a municipality code:</p>
+<p>However, both datasets also have a column with a municipality
+code:</p>
 <pre><code>&gt; head(vac_admin$MUNICIPI_CODI)
 
 [1] 17182  8294  8299 25173 43095  8014
@@ -356,7 +477,14 @@ $Anoia
 
  [1] 480 292 297 683 857  14  18 699 136 376 261 161 837  29 143 265 729 906 421
 [20] 729</code></pre>
-<p>Once we know what column in each dataset can be used to combine them, we can use the <code>merge()</code> function, which by default will return only rows with common values in those two columns. By default, this function will combine data using columns with identical names. Since in our datasets the two columns with the common information are named differently, we need to specify which are these columns in each <code>data.frame</code> object by using the arguments <code>by.x</code> and <code>by.y</code>.</p>
+<p>Once we know what column in each dataset can be used to combine them,
+we can use the <code>merge()</code> function, which by default will
+return only rows with common values in those two columns. By default,
+this function will combine data using columns with identical names.
+Since in our datasets the two columns with the common information are
+named differently, we need to specify which are these columns in each
+<code>data.frame</code> object by using the arguments <code>by.x</code>
+and <code>by.y</code>.</p>
 <pre><code>&gt; vac_pop_merge &lt;- merge(vac_admin, pop_sel, 
 +                        by.x = &quot;MUNICIPI_CODI&quot;, by.y = &quot;Codi_ine_5_txt&quot;)
 &gt; dim(vac_pop_merge)
@@ -380,30 +508,54 @@ $Anoia
 5 BAIX LLOBREGAT   ABRERA             NA No classificat    2 15/09/2021
 6 BAIX LLOBREGAT   ABRERA             NA No classificat    1 31/03/2021
              FABRICANT NO_VACUNAT RECOMPTE NomMun        Comarca Poblacio_padro
-1        J&amp;J / Janssen                  19 Abrera Baix Llobregat          12697
-2    BioNTech / Pfizer                   4 Abrera Baix Llobregat          12697
-3    BioNTech / Pfizer                   1 Abrera Baix Llobregat          12697
-4 Oxford / AstraZeneca                   9 Abrera Baix Llobregat          12697
-5    BioNTech / Pfizer                   3 Abrera Baix Llobregat          12697
-6      Moderna / Lonza                   1 Abrera Baix Llobregat          12697
+1        J&amp;J / Janssen                  19 Abrera Baix Llobregat          12848
+2    BioNTech / Pfizer                   4 Abrera Baix Llobregat          12848
+3    BioNTech / Pfizer                   1 Abrera Baix Llobregat          12848
+4 Oxford / AstraZeneca                   9 Abrera Baix Llobregat          12848
+5    BioNTech / Pfizer                   3 Abrera Baix Llobregat          12848
+6      Moderna / Lonza                   1 Abrera Baix Llobregat          12848
   Superficie_ha  Density
-1      1997.865 635.5285
-2      1997.865 635.5285
-3      1997.865 635.5285
-4      1997.865 635.5285
-5      1997.865 635.5285
-6      1997.865 635.5285</code></pre>
-<p>Now the number of rows of the output data frame <code>vac_pop_merge</code> is slightly smaller than <code>vac_admin</code>, because it doesn’t keep rows that didn’t find a match in <code>pop_sel</code>.</p>
-<p><strong>Exercise:</strong> Using <code>vac_pop_merge</code>, add a new column named <code>doses_100K_h</code> containing how many vaccine doses were administered each day per 100,000 inhabitants. The column <code>RECOMPTE</code> contains the number of administered doses. Which towns administered the highest and the lowest rate of vaccine doses per 100,000 inhabitants, from what vaccine manufacturer and at which date?</p>
-<p>To continue with our analysis, we need to add a column containing a month as a factor. Thus, we repeat the steps explained in the previous <a href="/practical7/">practical 7</a> to convert the column <code>DATA</code> to a date, extract the months and convert them to a factor with ordered levels:</p>
+1      1997.865 643.0866
+2      1997.865 643.0866
+3      1997.865 643.0866
+4      1997.865 643.0866
+5      1997.865 643.0866
+6      1997.865 643.0866</code></pre>
+<p>Now the number of rows of the output data frame
+<code>vac_pop_merge</code> is slightly smaller than
+<code>vac_admin</code>, because it doesn’t keep rows that didn’t find a
+match in <code>pop_sel</code>.</p>
+<p><strong>Exercise:</strong> Using <code>vac_pop_merge</code>, add a
+new column named <code>doses100K</code> containing how many vaccine
+doses were administered each day per 100,000 inhabitants. The column
+<code>RECOMPTE</code> contains the number of administered doses. If you
+are unsure how to calculate the number of vaccine doses per 100,000
+inhabitants, check <a href="/lecture7/#22">lecture 7</a>. Which towns
+administered the highest and the lowest rate of vaccine doses per
+100,000 inhabitants, from what vaccine manufacturer and at which
+date?</p>
+<p>To continue with our analysis, we need to add a column containing a
+month as a factor. Thus, we repeat the steps explained in the previous
+<a href="/practical7/">practical 7</a> to convert the column
+<code>DATA</code> to a date, extract the months and convert them to a
+factor with ordered levels:</p>
 <pre><code>&gt; vac_pop_merge$month &lt;- months(as.Date(vac_pop_merge$DATA, &quot;%d/%m/%Y&quot;),
 +                               abbreviate=TRUE)
 &gt; vac_pop_merge$month &lt;- factor(vac_pop_merge$month,
 +                               levels=c(&quot;Jan&quot;, &quot;Feb&quot;, &quot;Mar&quot;, &quot;Apr&quot;, &quot;May&quot;, &quot;Jun&quot;,
 +                                        &quot;Jul&quot;, &quot;Aug&quot;, &quot;Sep&quot;, &quot;Oct&quot;, &quot;Nov&quot;, &quot;Dec&quot;))</code></pre>
-<p>Next, we will select the towns with high population (more than 200,000 residents) and save them into a data frame called <code>vac_high</code>. Now we want to obtain the total vaccine doses administered per inhabitant every month in these specific towns. Again, we take advantege of the combination of <code>split</code> and <code>sapply</code> to do this calculation. Finally, we create a new data frame with the summarised data, including a column called <code>muni_type</code> that identifies the type of municipalities (“High” as in “High population”) used for extracting this values.</p>
+<p>More highly populated towns provide more robust estimates of
+vaccination rate. For this reason, we will select the towns with high
+population (more than 200,000 inhabitants) and save them into a data
+frame called <code>vac_high</code>. Now we want to obtain the total
+vaccine doses administered per inhabitant every month in these specific
+towns. Again, we take advantage of the combination of <code>split</code>
+and <code>sapply</code> to do this calculation. Finally, we create a new
+data frame with the summarised data, including a column called
+<code>muni_type</code> that identifies the type of municipalities
+(“High” as in “High population”) used for extracting this values.</p>
 <pre><code>&gt; vac_high &lt;- vac_pop_merge[vac_pop_merge$Poblacio_padro &gt; 200000,]
-&gt; dosesh_high &lt;- split(vac_high$doses_100K_h, vac_high$month)
+&gt; dosesh_high &lt;- split(vac_high$doses100K, vac_high$month)
 &gt; 
 &gt; total_dosesh_high &lt;- sapply(dosesh_high, sum)
 &gt; 
@@ -414,5 +566,15 @@ $Anoia
 &gt; barplot(df_high$doses_h, names.arg = df_high$month,
 +         main=&quot;Highly populated municipalities&quot;)</code></pre>
 <p><img src="barplotDosesHighPop-1.png" /></p>
-<p><strong>Exercise</strong>: Create a data frame named <code>df_low</code> that contains the total doses per 100,000 inhabitants administered per month in municipalities with population smaller than 1,000 inhabitants. Make a bar plot showing the administered doses per 100,000 inhabitants per month, as we did above.</p>
-<p><strong>Exercise</strong>: Combine the data frames <code>df_high</code> and <code>df_low</code> into a single data frame named <code>df_months</code> (<strong>Hint</strong>: Make sure that <code>df_high</code> and <code>df_low</code> have the same columns, with the same name and in the same order). Then make a box plot showing the distribution of doses per 100,000 inhabitants grouped by the type of municipality (low or high). Do you see any difference?</p>
+<p><strong>Exercise</strong>: Create a data frame named
+<code>df_low</code> that contains the total doses per 100,000
+inhabitants administered per month in municipalities with population
+smaller than 1,000 inhabitants. Make a bar plot showing the administered
+doses per 100,000 inhabitants per month, as we did above.</p>
+<p><strong>Exercise</strong>: Combine the data frames
+<code>df_high</code> and <code>df_low</code> into a single data frame
+named <code>df_months</code> (<strong>Hint</strong>: Make sure that
+<code>df_high</code> and <code>df_low</code> have the same columns, with
+the same name and in the same order). Then make a box plot showing the
+distribution of doses per 100,000 inhabitants grouped by the type of
+municipality (low or high). Do you see any difference?</p>

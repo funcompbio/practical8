@@ -10,6 +10,7 @@ knitr::opts_chunk$set(echo = TRUE,
                       comment="", 
                       prompt=TRUE)
 Sys.setlocale("LC_TIME", "C")
+options(continue="  ")
 ```
 
 # Objectives
@@ -56,18 +57,43 @@ steps:
       
 * __Population by municipality__:
 
-   1. Download the Catalan Urbanistic Map dataset at the
-      [Dades Obertes de Catalunya](https://governobert.gencat.cat/ca/dades_obertes)
-      data portal. You can either click on the link at the bottom right called
-      "Access the catalog" and then search for "Dades del mapa urbanístic de Catalunya"
-      or directly go to the following
-      [link](https://analisi.transparenciacatalunya.cat/en/Urbanisme-infraestructures/Dades-del-mapa-urban-stic-de-Catalunya/epsm-zskb).
-      Once you are on the page entitled "Dades del mapa urbanístic de Catalunya",
-      download the data by going to the top right corner and select "Export"
-      and then "CSV". This dataset includes information of the population of Catalonia
-      by municipality.
+   1. We will download the Catalan Urbanistic Map dataset at the
+      [Dades Obertes de Catalunya](https://web.gencat.cat/ca/generalitat/dades-indicadors/dades-obertes)
+      data portal. First you would click on the link called "Access the catalog",
+      then search for "Dades del mapa urbanístic de Catalunya", and finally click
+      on "Export" to download the data in CSV format. However, the most recent
+      version of these data encodes numbers using dots as thousand separators, which
+      is not the default in R. For that reason, you can either download an older
+      version of this dataset with the numbers encoded in a way that R can read
+      directly, from this [link](poblacio_municipis.csv), or apply the instructions
+      described in step 3. This dataset includes information of the
+      population of Catalonia by municipality.
    2. Copy the downloaded file to the `practical8` directory and
       **change its name to `poblacio_municipis.csv`**.
+   3. If you downloaded the most recent version of the dataset (not the older one
+      directly linked in step 1), you will have to replace the dots in the
+      columns with numbers by empty characters, and then replace the commas by
+      dots, so that R can read the numbers as numeric values. You can do that
+      using the following code:
+      ```{r, include=TRUE, eval=FALSE}
+      ## read the CSV file with the default settings, which will read the numbers using
+      ## dots as thousands separators and commas as decimal separators, as characters
+      pop <- read.csv("poblacio_municipis.csv")
+
+      ## define a function that takes a character vector as input, replaces the dots by
+      ## empty characters, replaces the commas by dots, and finally converts the result
+      ## to numeric values
+      convert2num <- function(x) {
+        x <- gsub("\\.", "", x) # replace dots by empty characters
+        x <- gsub(",", ".", x) # replace commas by dots
+        as.numeric(x) # convert to numeric
+      }
+
+      ## call the function 'convert2num' for each column of 'pop' from the 9th to the
+      ## last one, and assign the result to the same columns of 'pop'
+      pop[, 9:ncol(pop)] <- lapply(pop[, 9:ncol(pop)], convert2num)
+      ```
+
 
 ```{r, include=FALSE, eval=FALSE}
 ## Download required files
@@ -82,6 +108,7 @@ demographic indicators for the 948 municipalities in Catalonia such as the
 population (column `Poblacio_padro`).
 
 ```{r}
+## run the following line only if you did not run the code in step 3 of the previous section
 pop <- read.csv("poblacio_municipis.csv")
 dim(pop)
 head(pop, n=3)
@@ -89,7 +116,7 @@ table(pop$Any)
 ```
 
 We can observe that this dataset contains data from different years. To continue
-with our analysis, we will select the most recent data corresponding to 2023 and,
+with our analysis, we will select here the data corresponding to 2023 and,
 moreover, we will only keep the columns `Codi_ine_5_txt` (identifier for the
 municipality), `NomMun`, `Comarca`, `Poblacio_padro` and `Superficie_ha`,
 corresponding to town identifier, town name, county, population, town surface in
@@ -352,21 +379,21 @@ vac_pop_merge$month <- factor(vac_pop_merge$month,
 More highly populated towns provide more robust estimates of vaccination rate.
 For this reason, we will select the towns with high population (more than
 200,000 inhabitants) and save them into a data frame called `vac_high`. Now we
-want to obtain the total vaccine doses administered per inhabitant every month
-in these specific towns. Again, we take advantage of the combination of `split`
-and `sapply` to do this calculation. Finally, we create a new data frame with the
-summarised data, including a column called `muni_type` that identifies the 
-type of municipalities ("High" as in "High population") used for extracting
-this values.
+want to obtain the average vaccine rate per 100,000 inhabitants administered
+every month in these specific towns. Again, we take advantage of the combination
+of `split` and `sapply` to do this calculation. Finally, we create a new data
+frame with the summarised data, including a column called `muni_type` that
+identifies the type of municipalities ("High" as in "High population") used for
+extracting this values.
 
 ```{r barplotDosesHighPop}
 vac_high <- vac_pop_merge[vac_pop_merge$Poblacio_padro > 200000,]
-dosesh_high <- split(vac_high$doses100K, vac_high$month)
+doses_high <- split(vac_high$doses100K, vac_high$month)
 
-total_dosesh_high <- sapply(dosesh_high, sum)
+total_doses_high <- sapply(doses_high, mean)
 
-df_high <- data.frame("month"=names(total_dosesh_high),
-                      "doses_h"=total_dosesh_high,
+df_high <- data.frame("month"=names(total_doses_high),
+                      "doses_h"=total_doses_high,
                       "muni_type"="High")
 
 barplot(df_high$doses_h, names.arg = df_high$month,
@@ -381,12 +408,12 @@ smaller than 1,000 inhabitants. Make a bar plot showing the administered doses p
 
 ```{r barplotDosesLowPop, include = FALSE}
 vac_low <- vac_pop_merge[vac_pop_merge$Poblacio_padro < 1000,]
-dosesh_low <- split(vac_low$doses100K, vac_low$month)
+doses_low <- split(vac_low$doses100K, vac_low$month)
 
-total_dosesh_low <- sapply(dosesh_low, sum)
+total_doses_low <- sapply(doses_low, sum)
 
-df_low <- data.frame("month"=names(total_dosesh_low),
-                     "doses_h"=total_dosesh_low,
+df_low <- data.frame("month"=names(total_doses_low),
+                     "doses_h"=total_doses_low,
                      "muni_type"="Low")
 
 barplot(df_low$doses_h, names.arg = df_low$month,
@@ -403,5 +430,5 @@ grouped by the type of municipality (low or high). Do you see any difference?
 df_months <- rbind(df_high, df_low)
 
 boxplot(df_months$doses_h ~ df_months$muni_type,
-        xlab="Municipality Type (~Population)", ylab="Doses per 100,000 residents")
+        xlab="Municipality Type (~Population)", ylab="Doses per 100,000 inhabitants")
 ```

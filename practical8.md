@@ -2,11 +2,11 @@
 
 The learning objectives for this practical are:
 
--   How to create and use list objects.
--   How to perform implicit looping through lists.
--   Add new columns to data frames.
--   How to merge data frames.
--   Learn to explore and visualize data in different ways.
+- How to create and use list objects.
+- How to perform implicit looping through lists.
+- Add new columns to data frames.
+- How to merge data frames.
+- Learn to explore and visualize data in different ways.
 
 # Setup and background
 
@@ -20,44 +20,68 @@ We will download COVID19 vaccination and demographic data for Catalonia
 to illustrate some data wrangling in R and RStudio. Please follow the
 next two steps:
 
--   **COVID19 vaccination by municipality**:
+- **COVID19 vaccination by municipality**:
 
-    1.  We will download the COVID19 vaccination data by municipality
-        from the [open data
-        portal](https://analisi.transparenciacatalunya.cat/Salut/Vacunaci-per-al-COVID-19-dosis-administrades-per-m/irki-p3c7).
-        However, this data portal provides the data as an uncompressed
-        CSV file of over 100MB large, which may take few minutes to
-        download. You can download a compressed ZIP version of this file
-        from this
-        [link](Vacunaci__per_al_COVID-19__dosis_administrades_per_municipi.zip).
-        Once downloaded, you will have to uncompress it to obtain the
-        CSV file using the instruction:
+  1.  We will download the COVID19 vaccination data by municipality from
+      the [open data
+      portal](https://analisi.transparenciacatalunya.cat/Salut/Vacunaci-per-al-COVID-19-dosis-administrades-per-m/irki-p3c7).
+      However, this data portal provides the data as an uncompressed CSV
+      file of over 100MB large, which may take few minutes to download.
+      You can download a compressed ZIP version of this file from this
+      [link](Vacunaci__per_al_COVID-19__dosis_administrades_per_municipi.zip).
+      Once downloaded, you will have to uncompress it to obtain the CSV
+      file using the instruction:
 
-            $ unzip Vacunaci__per_al_COVID-19__dosis_administrades_per_municipi.zip
+          $ unzip Vacunaci__per_al_COVID-19__dosis_administrades_per_municipi.zip
 
-    2.  Make a directory in your filesystem, for instance at your *home*
-        directory, called `practical8` and copy in it the downloaded
-        file.
+  2.  Make a directory in your filesystem, for instance at your *home*
+      directory, called `practical8` and copy in it the downloaded file.
 
-    3.  **Change the name of the file you just downloaded to
-        `dosis_municipi.csv`**, so that you finally have a file called
-        `dosis_municipi.csv` in the directory `practical8`.
+  3.  **Change the name of the file you just downloaded to
+      `dosis_municipi.csv`**, so that you finally have a file called
+      `dosis_municipi.csv` in the directory `practical8`.
 
--   **Population by municipality**:
+- **Population by municipality**:
 
-    1.  Download the Catalan Urbanistic Map dataset at the [Dades
-        Obertes de
-        Catalunya](https://governobert.gencat.cat/ca/dades_obertes) data
-        portal. You can either click on the link at the bottom right
-        called “Access the catalog” and then search for “Dades del mapa
-        urbanístic de Catalunya” or directly go to the following
-        [link](https://analisi.transparenciacatalunya.cat/en/Urbanisme-infraestructures/Dades-del-mapa-urban-stic-de-Catalunya/epsm-zskb).
-        Once you are on the page entitled “Dades del mapa urbanístic de
-        Catalunya”, download the data by going to the top right corner
-        and select “Export” and then “CSV”. This dataset includes
-        information of the population of Catalonia by municipality.
-    2.  Copy the downloaded file to the `practical8` directory and
-        **change its name to `poblacio_municipis.csv`**.
+  1.  We will download the Catalan Urbanistic Map dataset at the [Dades
+      Obertes de
+      Catalunya](https://web.gencat.cat/ca/generalitat/dades-indicadors/dades-obertes)
+      data portal. First you would click on the link called “Access the
+      catalog”, then search for “Dades del mapa urbanístic de
+      Catalunya”, and finally click on “Export” to download the data in
+      CSV format. However, the most recent version of these data encodes
+      numbers using dots as thousand separators, which is not the
+      default in R. For that reason, you can either download an older
+      version of this dataset with the numbers encoded in a way that R
+      can read directly, from this [link](poblacio_municipis.csv), or
+      apply the instructions described in step 3. This dataset includes
+      information of the population of Catalonia by municipality.
+
+  2.  Copy the downloaded file to the `practical8` directory and
+      **change its name to `poblacio_municipis.csv`**.
+
+  3.  If you downloaded the most recent version of the dataset (not the
+      older one directly linked in step 1), you will have to replace the
+      dots in the columns with numbers by empty characters, and then
+      replace the commas by dots, so that R can read the numbers as
+      numeric values. You can do that using the following code:
+
+          > ## read the CSV file with the default settings, which will read the numbers using
+          > ## dots as thousands separators and commas as decimal separators, as characters
+          > pop <- read.csv("poblacio_municipis.csv")
+          > 
+          > ## define a function that takes a character vector as input, replaces the dots by
+          > ## empty characters, replaces the commas by dots, and finally converts the result
+          > ## to numeric values
+          > convert2num <- function(x) {
+              x <- gsub("\\.", "", x) # replace dots by empty characters
+              x <- gsub(",", ".", x) # replace commas by dots
+              as.numeric(x) # convert to numeric
+            }
+          > 
+          > ## call the function 'convert2num' for each column of 'pop' from the 9th to the
+          > ## last one, and assign the result to the same columns of 'pop'
+          > pop[, 9:ncol(pop)] <- lapply(pop[, 9:ncol(pop)], convert2num)
 
 # Reading and filtering data
 
@@ -65,6 +89,7 @@ Let’s load the CSV file `poblacio_municipis.csv`, which contains some
 demographic indicators for the 948 municipalities in Catalonia such as
 the population (column `Poblacio_padro`).
 
+    > ## run the following line only if you did not run the code in step 3 of the previous section
     > pop <- read.csv("poblacio_municipis.csv")
     > dim(pop)
 
@@ -132,11 +157,11 @@ the population (column `Poblacio_padro`).
      948  948  948  948  948  948  948  948  948  948  948  948 
 
 We can observe that this dataset contains data from different years. To
-continue with our analysis, we will select the most recent data
-corresponding to 2023 and, moreover, we will only keep the columns
-`Codi_ine_5_txt` (identifier for the municipality), `NomMun`, `Comarca`,
-`Poblacio_padro` and `Superficie_ha`, corresponding to town identifier,
-town name, county, population, town surface in
+continue with our analysis, we will select here the data corresponding
+to 2023 and, moreover, we will only keep the columns `Codi_ine_5_txt`
+(identifier for the municipality), `NomMun`, `Comarca`, `Poblacio_padro`
+and `Superficie_ha`, corresponding to town identifier, town name,
+county, population, town surface in
 [hectare](https://en.wikipedia.org/wiki/Hectare) (ha), respectively.
 
     > ## build a logical mask to select for year 2023
@@ -323,9 +348,9 @@ population in Catalonia.
 We have two functions in R that allow us to rearrange values in
 particular order:
 
--   `sort()` returns the ordered values.
--   `order()` returns a permutation which rearranges its first argument
-    into ascending or descending order.
+- `sort()` returns the ordered values.
+- `order()` returns a permutation which rearranges its first argument
+  into ascending or descending order.
 
 By default, these functions return an ascending order, but by setting
 the argument `decreasing=TRUE`, we can obtain a descending order.
@@ -376,13 +401,13 @@ with highest population and density. We can do that using the functions
 `plot()` and `text()` as follows.
 
     > plot(pop_sel$Poblacio_padro, pop_sel$Density, xlab="Population (inhabitants)",
-    +      ylab="Population density")
+           ylab="Population density")
     > whmaxpop <- which.max(pop_sel$Poblacio_padro)
     > whmaxden <- which.max(pop_sel$Density)
     > text(pop_sel$Poblacio_padro[whmaxpop], pop_sel$Density[whmaxpop],
-    +      pop_sel$NomMun[whmaxpop], pos=2)
+           pop_sel$NomMun[whmaxpop], pos=2)
     > text(pop_sel$Poblacio_padro[whmaxden], pop_sel$Density[whmaxden],
-    +      pop_sel$NomMun[whmaxden], pos=1)
+           pop_sel$NomMun[whmaxden], pos=1)
 
 ![](popabsvsden-1.png)
 
@@ -523,7 +548,7 @@ need to specify which are these columns in each `data.frame` object by
 using the arguments `by.x` and `by.y`.
 
     > vac_pop_merge <- merge(vac_admin, pop_sel, 
-    +                        by.x = "MUNICIPI_CODI", by.y = "Codi_ine_5_txt")
+                             by.x = "MUNICIPI_CODI", by.y = "Codi_ine_5_txt")
     > dim(vac_pop_merge)
 
     [1] 1067744      20
@@ -577,33 +602,33 @@ month as a factor. Thus, we repeat the steps explained in the previous
 extract the months and convert them to a factor with ordered levels:
 
     > vac_pop_merge$month <- months(as.Date(vac_pop_merge$DATA, "%d/%m/%Y"),
-    +                               abbreviate=TRUE)
+                                    abbreviate=TRUE)
     > vac_pop_merge$month <- factor(vac_pop_merge$month,
-    +                               levels=c("Jan", "Feb", "Mar", "Apr", "May", "Jun",
-    +                                        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"))
+                                    levels=c("Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                                             "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"))
 
 More highly populated towns provide more robust estimates of vaccination
 rate. For this reason, we will select the towns with high population
 (more than 200,000 inhabitants) and save them into a data frame called
-`vac_high`. Now we want to obtain the total vaccine doses administered
-per inhabitant every month in these specific towns. Again, we take
-advantage of the combination of `split` and `sapply` to do this
+`vac_high`. Now we want to obtain the average vaccine rate per 100,000
+inhabitants administered every month in these specific towns. Again, we
+take advantage of the combination of `split` and `sapply` to do this
 calculation. Finally, we create a new data frame with the summarised
 data, including a column called `muni_type` that identifies the type of
 municipalities (“High” as in “High population”) used for extracting this
 values.
 
     > vac_high <- vac_pop_merge[vac_pop_merge$Poblacio_padro > 200000,]
-    > dosesh_high <- split(vac_high$doses100K, vac_high$month)
+    > doses_high <- split(vac_high$doses100K, vac_high$month)
     > 
-    > total_dosesh_high <- sapply(dosesh_high, sum)
+    > total_doses_high <- sapply(doses_high, mean)
     > 
-    > df_high <- data.frame("month"=names(total_dosesh_high),
-    +                       "doses_h"=total_dosesh_high,
-    +                       "muni_type"="High")
+    > df_high <- data.frame("month"=names(total_doses_high),
+                            "doses_h"=total_doses_high,
+                            "muni_type"="High")
     > 
     > barplot(df_high$doses_h, names.arg = df_high$month,
-    +         main="Highly populated municipalities")
+              main="Highly populated municipalities")
 
 ![](barplotDosesHighPop-1.png)
 

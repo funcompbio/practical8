@@ -41,19 +41,42 @@ file called <code>dosis_municipi.csv</code> in the directory
 </ol></li>
 <li><p><strong>Population by municipality</strong>:</p>
 <ol type="1">
-<li>Download the Catalan Urbanistic Map dataset at the <a
-href="https://governobert.gencat.cat/ca/dades_obertes">Dades Obertes de
-Catalunya</a> data portal. You can either click on the link at the
-bottom right called “Access the catalog” and then search for “Dades del
-mapa urbanístic de Catalunya” or directly go to the following <a
-href="https://analisi.transparenciacatalunya.cat/en/Urbanisme-infraestructures/Dades-del-mapa-urban-stic-de-Catalunya/epsm-zskb">link</a>.
-Once you are on the page entitled “Dades del mapa urbanístic de
-Catalunya”, download the data by going to the top right corner and
-select “Export” and then “CSV”. This dataset includes information of the
-population of Catalonia by municipality.</li>
-<li>Copy the downloaded file to the <code>practical8</code> directory
+<li><p>We will download the Catalan Urbanistic Map dataset at the <a
+href="https://web.gencat.cat/ca/generalitat/dades-indicadors/dades-obertes">Dades
+Obertes de Catalunya</a> data portal. First you would click on the link
+called “Access the catalog”, then search for “Dades del mapa urbanístic
+de Catalunya”, and finally click on “Export” to download the data in CSV
+format. However, the most recent version of these data encodes numbers
+using dots as thousand separators, which is not the default in R. For
+that reason, you can either download an older version of this dataset
+with the numbers encoded in a way that R can read directly, from this <a
+href="poblacio_municipis.csv">link</a>, or apply the instructions
+described in step 3. This dataset includes information of the population
+of Catalonia by municipality.</p></li>
+<li><p>Copy the downloaded file to the <code>practical8</code> directory
 and <strong>change its name to
-<code>poblacio_municipis.csv</code></strong>.</li>
+<code>poblacio_municipis.csv</code></strong>.</p></li>
+<li><p>If you downloaded the most recent version of the dataset (not the
+older one directly linked in step 1), you will have to replace the dots
+in the columns with numbers by empty characters, and then replace the
+commas by dots, so that R can read the numbers as numeric values. You
+can do that using the following code:</p>
+<pre><code>&gt; ## read the CSV file with the default settings, which will read the numbers using
+&gt; ## dots as thousands separators and commas as decimal separators, as characters
+&gt; pop &lt;- read.csv(&quot;poblacio_municipis.csv&quot;)
+&gt; 
+&gt; ## define a function that takes a character vector as input, replaces the dots by
+&gt; ## empty characters, replaces the commas by dots, and finally converts the result
+&gt; ## to numeric values
+&gt; convert2num &lt;- function(x) {
+    x &lt;- gsub(&quot;\\.&quot;, &quot;&quot;, x) # replace dots by empty characters
+    x &lt;- gsub(&quot;,&quot;, &quot;.&quot;, x) # replace commas by dots
+    as.numeric(x) # convert to numeric
+  }
+&gt; 
+&gt; ## call the function &#39;convert2num&#39; for each column of &#39;pop&#39; from the 9th to the
+&gt; ## last one, and assign the result to the same columns of &#39;pop&#39;
+&gt; pop[, 9:ncol(pop)] &lt;- lapply(pop[, 9:ncol(pop)], convert2num)</code></pre></li>
 </ol></li>
 </ul>
 <h1 id="reading-and-filtering-data">Reading and filtering data</h1>
@@ -61,7 +84,8 @@ and <strong>change its name to
 contains some demographic indicators for the 948 municipalities in
 Catalonia such as the population (column
 <code>Poblacio_padro</code>).</p>
-<pre><code>&gt; pop &lt;- read.csv(&quot;poblacio_municipis.csv&quot;)
+<pre><code>&gt; ## run the following line only if you did not run the code in step 3 of the previous section
+&gt; pop &lt;- read.csv(&quot;poblacio_municipis.csv&quot;)
 &gt; dim(pop)
 
 [1] 11376    69
@@ -127,7 +151,7 @@ Catalonia such as the population (column
 2012 2013 2014 2015 2016 2017 2018 2019 2020 2021 2022 2023 
  948  948  948  948  948  948  948  948  948  948  948  948 </code></pre>
 <p>We can observe that this dataset contains data from different years.
-To continue with our analysis, we will select the most recent data
+To continue with our analysis, we will select here the data
 corresponding to 2023 and, moreover, we will only keep the columns
 <code>Codi_ine_5_txt</code> (identifier for the municipality),
 <code>NomMun</code>, <code>Comarca</code>, <code>Poblacio_padro</code>
@@ -354,13 +378,13 @@ density and absolute population, highlighting the two municipalities
 with highest population and density. We can do that using the functions
 <code>plot()</code> and <code>text()</code> as follows.</p>
 <pre><code>&gt; plot(pop_sel$Poblacio_padro, pop_sel$Density, xlab=&quot;Population (inhabitants)&quot;,
-+      ylab=&quot;Population density&quot;)
+       ylab=&quot;Population density&quot;)
 &gt; whmaxpop &lt;- which.max(pop_sel$Poblacio_padro)
 &gt; whmaxden &lt;- which.max(pop_sel$Density)
 &gt; text(pop_sel$Poblacio_padro[whmaxpop], pop_sel$Density[whmaxpop],
-+      pop_sel$NomMun[whmaxpop], pos=2)
+       pop_sel$NomMun[whmaxpop], pos=2)
 &gt; text(pop_sel$Poblacio_padro[whmaxden], pop_sel$Density[whmaxden],
-+      pop_sel$NomMun[whmaxden], pos=1)</code></pre>
+       pop_sel$NomMun[whmaxden], pos=1)</code></pre>
 <p><img src="popabsvsden-1.png" /></p>
 <p>Note that in the previous code we have used the function
 <code>which.max()</code> to obtain the position in the input vector that
@@ -486,7 +510,7 @@ named differently, we need to specify which are these columns in each
 <code>data.frame</code> object by using the arguments <code>by.x</code>
 and <code>by.y</code>.</p>
 <pre><code>&gt; vac_pop_merge &lt;- merge(vac_admin, pop_sel, 
-+                        by.x = &quot;MUNICIPI_CODI&quot;, by.y = &quot;Codi_ine_5_txt&quot;)
+                         by.x = &quot;MUNICIPI_CODI&quot;, by.y = &quot;Codi_ine_5_txt&quot;)
 &gt; dim(vac_pop_merge)
 
 [1] 1067744      20
@@ -540,31 +564,32 @@ month as a factor. Thus, we repeat the steps explained in the previous
 <code>DATA</code> to a date, extract the months and convert them to a
 factor with ordered levels:</p>
 <pre><code>&gt; vac_pop_merge$month &lt;- months(as.Date(vac_pop_merge$DATA, &quot;%d/%m/%Y&quot;),
-+                               abbreviate=TRUE)
+                                abbreviate=TRUE)
 &gt; vac_pop_merge$month &lt;- factor(vac_pop_merge$month,
-+                               levels=c(&quot;Jan&quot;, &quot;Feb&quot;, &quot;Mar&quot;, &quot;Apr&quot;, &quot;May&quot;, &quot;Jun&quot;,
-+                                        &quot;Jul&quot;, &quot;Aug&quot;, &quot;Sep&quot;, &quot;Oct&quot;, &quot;Nov&quot;, &quot;Dec&quot;))</code></pre>
+                                levels=c(&quot;Jan&quot;, &quot;Feb&quot;, &quot;Mar&quot;, &quot;Apr&quot;, &quot;May&quot;, &quot;Jun&quot;,
+                                         &quot;Jul&quot;, &quot;Aug&quot;, &quot;Sep&quot;, &quot;Oct&quot;, &quot;Nov&quot;, &quot;Dec&quot;))</code></pre>
 <p>More highly populated towns provide more robust estimates of
 vaccination rate. For this reason, we will select the towns with high
 population (more than 200,000 inhabitants) and save them into a data
-frame called <code>vac_high</code>. Now we want to obtain the total
-vaccine doses administered per inhabitant every month in these specific
-towns. Again, we take advantage of the combination of <code>split</code>
-and <code>sapply</code> to do this calculation. Finally, we create a new
-data frame with the summarised data, including a column called
-<code>muni_type</code> that identifies the type of municipalities
-(“High” as in “High population”) used for extracting this values.</p>
+frame called <code>vac_high</code>. Now we want to obtain the average
+vaccine rate per 100,000 inhabitants administered every month in these
+specific towns. Again, we take advantage of the combination of
+<code>split</code> and <code>sapply</code> to do this calculation.
+Finally, we create a new data frame with the summarised data, including
+a column called <code>muni_type</code> that identifies the type of
+municipalities (“High” as in “High population”) used for extracting this
+values.</p>
 <pre><code>&gt; vac_high &lt;- vac_pop_merge[vac_pop_merge$Poblacio_padro &gt; 200000,]
-&gt; dosesh_high &lt;- split(vac_high$doses100K, vac_high$month)
+&gt; doses_high &lt;- split(vac_high$doses100K, vac_high$month)
 &gt; 
-&gt; total_dosesh_high &lt;- sapply(dosesh_high, sum)
+&gt; total_doses_high &lt;- sapply(doses_high, mean)
 &gt; 
-&gt; df_high &lt;- data.frame(&quot;month&quot;=names(total_dosesh_high),
-+                       &quot;doses_h&quot;=total_dosesh_high,
-+                       &quot;muni_type&quot;=&quot;High&quot;)
+&gt; df_high &lt;- data.frame(&quot;month&quot;=names(total_doses_high),
+                        &quot;doses_h&quot;=total_doses_high,
+                        &quot;muni_type&quot;=&quot;High&quot;)
 &gt; 
 &gt; barplot(df_high$doses_h, names.arg = df_high$month,
-+         main=&quot;Highly populated municipalities&quot;)</code></pre>
+          main=&quot;Highly populated municipalities&quot;)</code></pre>
 <p><img src="barplotDosesHighPop-1.png" /></p>
 <p><strong>Exercise</strong>: Create a data frame named
 <code>df_low</code> that contains the total doses per 100,000

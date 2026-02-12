@@ -71,7 +71,7 @@ steps:
    2. Copy the downloaded file to the `practical8` directory and
       **change its name to `poblacio_municipis.csv`**.
    3. If you downloaded the most recent version of the dataset (not the older one
-      directly linked in step 1), you will have to replace the dots in the
+      directly linked in step 1, you will have to replace the dots in the
       columns with numbers by empty characters, and then replace the commas by
       dots, so that R can read the numbers as numeric values. You can do that
       using the following code:
@@ -392,11 +392,11 @@ doses_high <- split(vac_high$doses100K, vac_high$month)
 
 total_doses_high <- sapply(doses_high, mean)
 
-df_high <- data.frame("month"=names(total_doses_high),
-                      "doses_h"=total_doses_high,
-                      "muni_type"="High")
+df_high <- data.frame(month=names(total_doses_high),
+                      doses=total_doses_high,
+                      muni_type="High")
 
-barplot(df_high$doses_h, names.arg = df_high$month,
+barplot(df_high$doses, names.arg = df_high$month,
         main="Highly populated municipalities")
 ```
 
@@ -406,17 +406,17 @@ per 100,000 inhabitants administered per month in municipalities with population
 smaller than 1,000 inhabitants. Make a bar plot showing the administered doses per
 100,000 inhabitants per month, as we did above.
 
-```{r barplotDosesLowPop, include = FALSE}
+```{r barplotDosesLowPop, include=FALSE}
 vac_low <- vac_pop_merge[vac_pop_merge$Poblacio_padro < 1000,]
 doses_low <- split(vac_low$doses100K, vac_low$month)
 
 total_doses_low <- sapply(doses_low, sum)
 
-df_low <- data.frame("month"=names(total_doses_low),
-                     "doses_h"=total_doses_low,
-                     "muni_type"="Low")
+df_low <- data.frame(month=names(total_doses_low),
+                     doses=total_doses_low,
+                     muni_type="Low")
 
-barplot(df_low$doses_h, names.arg = df_low$month,
+barplot(df_low$doses, names.arg = df_low$month,
         main="Lowly populated municipalities")
 ```
 
@@ -429,6 +429,6 @@ grouped by the type of municipality (low or high). Do you see any difference?
 ```{r boxplotDosesHighLowPop, include=FALSE}
 df_months <- rbind(df_high, df_low)
 
-boxplot(df_months$doses_h ~ df_months$muni_type,
+boxplot(df_months$doses ~ df_months$muni_type,
         xlab="Municipality Type (~Population)", ylab="Doses per 100,000 inhabitants")
 ```

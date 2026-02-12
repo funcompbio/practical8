@@ -57,7 +57,7 @@ of Catalonia by municipality.</p></li>
 and <strong>change its name to
 <code>poblacio_municipis.csv</code></strong>.</p></li>
 <li><p>If you downloaded the most recent version of the dataset (not the
-older one directly linked in step 1), you will have to replace the dots
+older one directly linked in step 1, you will have to replace the dots
 in the columns with numbers by empty characters, and then replace the
 commas by dots, so that R can read the numbers as numeric values. You
 can do that using the following code:</p>
@@ -584,11 +584,11 @@ values.</p>
 &gt; 
 &gt; total_doses_high &lt;- sapply(doses_high, mean)
 &gt; 
-&gt; df_high &lt;- data.frame(&quot;month&quot;=names(total_doses_high),
-                        &quot;doses_h&quot;=total_doses_high,
-                        &quot;muni_type&quot;=&quot;High&quot;)
+&gt; df_high &lt;- data.frame(month=names(total_doses_high),
+                        doses=total_doses_high,
+                        muni_type=&quot;High&quot;)
 &gt; 
-&gt; barplot(df_high$doses_h, names.arg = df_high$month,
+&gt; barplot(df_high$doses, names.arg = df_high$month,
           main=&quot;Highly populated municipalities&quot;)</code></pre>
 <p><img src="barplotDosesHighPop-1.png" /></p>
 <p><strong>Exercise</strong>: Create a data frame named

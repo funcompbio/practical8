@@ -61,7 +61,7 @@ next two steps:
       **change its name to `poblacio_municipis.csv`**.
 
   3.  If you downloaded the most recent version of the dataset (not the
-      older one directly linked in step 1), you will have to replace the
+      older one directly linked in step 1, you will have to replace the
       dots in the columns with numbers by empty characters, and then
       replace the commas by dots, so that R can read the numbers as
       numeric values. You can do that using the following code:
@@ -623,11 +623,11 @@ values.
     > 
     > total_doses_high <- sapply(doses_high, mean)
     > 
-    > df_high <- data.frame("month"=names(total_doses_high),
-                            "doses_h"=total_doses_high,
-                            "muni_type"="High")
+    > df_high <- data.frame(month=names(total_doses_high),
+                            doses=total_doses_high,
+                            muni_type="High")
     > 
-    > barplot(df_high$doses_h, names.arg = df_high$month,
+    > barplot(df_high$doses, names.arg = df_high$month,
               main="Highly populated municipalities")
 
 ![](barplotDosesHighPop-1.png)
